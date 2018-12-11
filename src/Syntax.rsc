@@ -1,7 +1,7 @@
 module Syntax
 
-extend lang::std::Layout;
-extend lang::std::Id;
+extend lang::Layout;
+extend lang::Id;
 
 /*
  * Concrete syntax of QL
@@ -20,6 +20,12 @@ syntax Question
 // and use C/Java style precedence rules (look it up on the internet)
 syntax Expr 
   = Id \ "true" \ "false" // true/false are reserved keywords.
+  > assoc (left Expr "*" Expr | left Expr "/" Expr)
+  > assoc (left Expr "+" Expr | left Expr "-" Expr)
+  > assoc (Expr "\>" Expr | Expr "\<" Expr | Expr "\>=" Expr | Expr "\<=" Expr)
+  > "!" Expr
+  > assoc (left Expr "==" Expr | left Expr "!=" Expr)
+  > assoc (left Expr "&&" Expr | left Expr "||" Expr)
   ;
   
 syntax Type
