@@ -29,14 +29,15 @@ syntax Expr
   ;
   
 syntax Type
-  = ;  
+  = Int
+  | Str;  
   
 lexical Str = ;
 
 lexical Int 
   = ;
 
-lexical Bool = ;
+lexical Bool = "true" | "false";
 
 
 
