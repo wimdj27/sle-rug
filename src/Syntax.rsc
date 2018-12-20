@@ -36,12 +36,14 @@ syntax Type
   = "boolean"
   | "integer";
   
-lexical Str = "\"" ![\"\\\n] "\"";
+lexical Str 
+  = "\"" [a-zA-Z0-9_]* "\"";
 
 lexical Int 
-  = ;
+  = [0-9]*;
 
-lexical Bool = "true" | "false";
+lexical Bool 
+  = "true" | "false";
 
 
 
