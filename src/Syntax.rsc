@@ -24,12 +24,15 @@ syntax Question
 // and use C/Java style precedence rules (look it up on the internet)
 syntax Expr 
   = Id \ "true" \ "false" // true/false are reserved keywords.
-  > assoc (left Expr "*" Expr | left Expr "/" Expr)
-  > assoc (left Expr "+" Expr | left Expr "-" Expr)
-  > assoc (Expr "\>" Expr | Expr "\<" Expr | Expr "\>=" Expr | Expr "\<=" Expr)
+  | Int
+  | Bool
+  | Str
+  > left (Expr "*" Expr | Expr "/" Expr)
+  > left (Expr "+" Expr | Expr "-" Expr)
+  > non-assoc (Expr "\>" Expr | Expr "\<" Expr | Expr "\>=" Expr | Expr "\<=" Expr)
   > "!" Expr
-  > assoc (left Expr "==" Expr | left Expr "!=" Expr)
-  > assoc (left Expr "&&" Expr | left Expr "||" Expr)
+  > left (Expr "==" Expr | Expr "!=" Expr)
+  > left (Expr "&&" Expr | Expr "||" Expr)
   ;
   
 syntax Type
@@ -43,7 +46,8 @@ lexical Int
   = [0-9]*;
 
 lexical Bool 
-  = "true" | "false";
+  = "true" 
+  | "false";
 
 
 
