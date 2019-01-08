@@ -69,5 +69,13 @@ AExpr cst2ast(Expr e) {
 }
 
 AType cst2ast(Type t) {
-  throw "Not yet implemented";
+  switch (t) {
+  	case (Type) `boolean`:
+  	  return typ("boolean");
+  	  
+  	case (Type) `integer`:
+  	  return typ("integer");
+  	  
+  	default: throw "Unknown type: <t>";
+  }
 }
