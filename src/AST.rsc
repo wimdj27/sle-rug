@@ -12,10 +12,13 @@ data AForm(loc src = |tmp:///|)
   ; 
 
 data AQuestion(loc src = |tmp:///|)
-  ; 
+  = question(str name, list[AExpr] expressions)
+  ;
 
 data AExpr(loc src = |tmp:///|)
   = ref(str name)
   ;
 
-data AType(loc src = |tmp:///|);
+data AType(loc src = |tmp:///|)
+  = typ(str name)
+  ;
