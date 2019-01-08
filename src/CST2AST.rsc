@@ -24,24 +24,23 @@ AForm cst2ast(f: (Form) `form <Id x> { <Question* qs> }`) {
 AQuestion cst2ast(Question q) {
   switch (q) {
     case (Question) `<Str s> <Id x> : <Type t>`:
-      return question("<s>", "<t>", "<x>", null, src=q@\loc);
+      return regular("<s>", "<t>", "<x>", src=q@\loc);
     
     case (Question) `<Str s> <Id x> : <Type t> = <Expr e>`:
-      return question("<s>", "<t>", "<x>", cst2ast(e), src=q@\loc);
+      return expression("<s>", "<t>", "<x>", cst2ast(e), src=q@\loc);
       
     case (Question) `{ <Question* qs> }`:
-      for (q <- qs) cst2ast(q);
+      return qlist([cst2ast(q) | Question q <- qs], src=qs@\loc);
       
-    case (Question) `if ( <Id x> ) { <Question* if_qs> } else { <Question* else_qs> }`: {
-      for (q <- if_qs)   cst2ast(q);
-      for (q <- else_qs) cst2ast(q);
-    }
+    case (Question) `if ( <Id x> ) { <Question* ifqs> } else { <Question* elseqs> }`:
+      return ifthenelse([cst2ast(q) | Question q <- ifqs], [cst2ast(q) | Question q <- elseqs], 
+      	src=<ifqs,elseqs>@\loc);
     
     case (Question) `if ( <Id x> ) { <Question* qs> }`:
-      for (q <- qs) cst2ast(q);
+      return ifthen([cst2ast(q) | Question q <- qs], src=qs@\loc);
      
     case (Question) ``: // empty question
-      return;
+      return empty("");
       
     default: throw "Invalid question: <q>";
   }
@@ -53,16 +52,52 @@ AExpr cst2ast(Expr e) {
       return ref("<x>", src=x@\loc);
       
     case (Expr) `<Int i>`:
-      return ref("<i>", src=i@\loc);
+      return integer(i, src=i@\loc);
       
     case (Expr) `<Bool b>`:
-      return ref("<b>", src=b@\loc);
+      return boolean(b, src=b@\loc);
       
     case (Expr) `<Str s>`:
-      return ref("<s>", src=s@\loc);
+      return string(s, src=s@\loc);
       
     case (Expr) `<Expr a> * <Expr b>`:
-      return ;
+      return multiplication(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      
+    case (Expr) `<Expr a> / <Expr b>`:
+      return division(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      
+    case (Expr) `<Expr a> + <Expr b>`:
+      return addition(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      
+    case (Expr) `<Expr a> - <Expr b>`:
+      return subtraction(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      
+    case (Expr) `<Expr a> \> <Expr b>`:
+      return greater(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      
+    case (Expr) `<Expr a> \< <Expr b>`:
+      return smaller(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      
+    case (Expr) `<Expr a> \>= <Expr b>`:
+      return greatereq(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      
+    case (Expr) `<Expr a> \<= <Expr b>`:
+      return smallereq(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      
+    case (Expr) `! <Expr a>`:
+      return not(cst2ast(a), src=a@\loc);
+      
+    case (Expr) `<Expr a> == <Expr b>`:
+      return equal(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      
+    case (Expr) `<Expr a> != <Expr b>`:
+      return noteq(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      
+    case (Expr) `<Expr a> && <Expr b>`:
+      return and(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      
+    case (Expr) `<Expr a> || <Expr b>`:
+      return or(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
         
     default: throw "Unhandled expression: <e>";
   }
@@ -71,10 +106,10 @@ AExpr cst2ast(Expr e) {
 AType cst2ast(Type t) {
   switch (t) {
   	case (Type) `boolean`:
-  	  return typ("boolean");
+  	  return boolean();
   	  
   	case (Type) `integer`:
-  	  return typ("integer");
+  	  return integer();
   	  
   	default: throw "Unknown type: <t>";
   }
