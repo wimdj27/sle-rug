@@ -12,7 +12,7 @@ data AForm(loc src = |tmp:///|)
   ; 
 
 data AQuestion(loc src = |tmp:///|)
-  = question(str name, list[AExpr] expressions)
+  = question(str name, str id, str typ, AExpr expr)
   ;
 
 data AExpr(loc src = |tmp:///|)

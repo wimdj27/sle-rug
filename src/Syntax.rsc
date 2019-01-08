@@ -12,8 +12,8 @@ start syntax Form
 
 // TODO: question, computed question, block, if-then-else, if-then
 syntax Question
-  = Str ":" Type
-  | Str ":" Type "=" Expr
+  = Str Id ":" Type
+  | Str Id ":" Type "=" Expr
   | "{" Question* "}"
   | "if" "(" Id ")" "{" Question* "}" "else" "{" Question* "}"
   | "if" "(" Id ")" "{" Question* "}"
