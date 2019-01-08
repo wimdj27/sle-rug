@@ -16,13 +16,13 @@ import String;
  * - See the ref example on how to obtain and propagate source locations.
  */
 
-AForm cst2ast(start[Form] sf) {
-  Form f = sf.top; // remove layout before and after form
-  return form("", [], src=f@\loc); 
-}
+AForm cst2ast(start[Form] sf) = sf.top; // remove layout before and after form
+  
+AForm cst2ast((Form) `form <Id x> { <Question* qs> }`)
+  = form("<x>", [ cst2ast(q) | Question q <- qs ] , src=f@\loc);
 
 AQuestion cst2ast(Question q) {
-  throw "Not yet implemented";
+  
 }
 
 AExpr cst2ast(Expr e) {
