@@ -17,6 +17,7 @@ syntax Question
   | "{" Question* "}"
   | "if" "(" Id ")" "{" Question* "}" "else" "{" Question* "}"
   | "if" "(" Id ")" "{" Question* "}"
+  | ""
   ; 
 
 // TODO: +, -, *, /, &&, ||, !, >, <, <=, >=, ==, !=, literals (bool, int, str)
