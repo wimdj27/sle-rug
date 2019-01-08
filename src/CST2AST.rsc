@@ -53,13 +53,13 @@ AExpr cst2ast(Expr e) {
       return ref("<x>", src=x@\loc);
       
     case (Expr) `<Int i>`:
-      return ref("<i>", src=x@\loc);
+      return ref("<i>", src=i@\loc);
       
     case (Expr) `<Bool b>`:
-      return ref("<b>", src=x@\loc);
+      return ref("<b>", src=b@\loc);
       
     case (Expr) `<Str s>`:
-      return ref("<s>", src=x@\loc);
+      return ref("<s>", src=s@\loc);
       
     case (Expr) `<Expr a> * <Expr b>`:
       return ;
