@@ -27,19 +27,21 @@ AQuestion cst2ast(Question q) {
       return regular("<s>", "<t>", "<x>", src=q@\loc);
     
     case (Question) `<Str s> <Id x> : <Type t> = <Expr e>`:
-      return expression("<s>", "<t>", "<x>", cst2ast(e), src=q@\loc);
+      return computed("<s>", "<t>", "<x>", cst2ast(e), src=q@\loc);
       
     case (Question) `{ <Question* qs> }`:
-      return qlist([cst2ast(q) | Question q <- qs], src=qs@\loc);
+      return qlist([cst2ast(q) | Question q <- qs], src=q@\loc);
       
     case (Question) `if ( <Id x> ) { <Question* ifqs> } else { <Question* elseqs> }`:
-      return ifthenelse([cst2ast(q) | Question q <- ifqs], [cst2ast(q) | Question q <- elseqs], 
-      	src=<ifqs,elseqs>@\loc);
+      return ifthenelse([cst2ast(q) | Question q <- ifqs], [cst2ast(q) | Question q <- elseqs],  src=q@\loc);
     
     case (Question) `if ( <Id x> ) { <Question* qs> }`:
-      return ifthen([cst2ast(q) | Question q <- qs], src=qs@\loc);
+      return ifthen([cst2ast(q) | Question q <- qs], src=q@\loc);
      
     case (Question) ``: // empty question
+      return empty("");
+      
+    case (Question) `// _`:
       return empty("");
       
     default: throw "Invalid question: <q>";
@@ -61,43 +63,43 @@ AExpr cst2ast(Expr e) {
       return string(s, src=s@\loc);
       
     case (Expr) `<Expr a> * <Expr b>`:
-      return multiplication(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return multiplication(cst2ast(a), cst2ast(b), src=e@\loc);
       
     case (Expr) `<Expr a> / <Expr b>`:
-      return division(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return division(cst2ast(a), cst2ast(b), src=e@\loc);
       
     case (Expr) `<Expr a> + <Expr b>`:
-      return addition(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return addition(cst2ast(a), cst2ast(b), src=e@\loc);
       
     case (Expr) `<Expr a> - <Expr b>`:
-      return subtraction(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return subtraction(cst2ast(a), cst2ast(b), src=e@\loc);
       
     case (Expr) `<Expr a> \> <Expr b>`:
-      return greater(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return greater(cst2ast(a), cst2ast(b), src=e@\loc);
       
     case (Expr) `<Expr a> \< <Expr b>`:
-      return smaller(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return smaller(cst2ast(a), cst2ast(b), src=e@\loc);
       
     case (Expr) `<Expr a> \>= <Expr b>`:
-      return greatereq(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return greatereq(cst2ast(a), cst2ast(b), src=e@\loc);
       
     case (Expr) `<Expr a> \<= <Expr b>`:
-      return smallereq(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return smallereq(cst2ast(a), cst2ast(b), src=e@\loc);
       
     case (Expr) `! <Expr a>`:
       return not(cst2ast(a), src=a@\loc);
       
     case (Expr) `<Expr a> == <Expr b>`:
-      return equal(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return equal(cst2ast(a), cst2ast(b), src=e@\loc);
       
     case (Expr) `<Expr a> != <Expr b>`:
-      return noteq(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return noteq(cst2ast(a), cst2ast(b), src=e@\loc);
       
     case (Expr) `<Expr a> && <Expr b>`:
-      return and(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return and(cst2ast(a), cst2ast(b), src=e@\loc);
       
     case (Expr) `<Expr a> || <Expr b>`:
-      return or(cst2ast(a), cst2ast(b), src=<a,b>@\loc);
+      return or(cst2ast(a), cst2ast(b), src=e@\loc);
         
     default: throw "Unhandled expression: <e>";
   }

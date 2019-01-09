@@ -19,7 +19,7 @@ alias UseDef = rel[loc use, loc def];
 UseDef resolve(AForm f) = uses(f) o defs(f);
 
 Use uses(AForm f) {
-  return {}; 
+  return {};
 }
 
 Def defs(AForm f) {
