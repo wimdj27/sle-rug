@@ -1,6 +1,8 @@
 module Resolve
 
 import AST;
+import util::Math;
+import Boolean;
 
 /*
  * Name resolution for QL
@@ -59,14 +61,14 @@ Use uses(AExpr e) {
     case ref(str name, src = loc u):
       use += { <u, name> };
       
-    case integer(AExpr a):
-      use += uses(a);
+    case integer(int i, src = loc u):
+      use += { <u, toString(i)> };
       
-    case boolean(AExpr a):
-      use += uses(a);
+    case boolean(bool b, src = loc u):
+      use += { <u, toString(b)> };
     
-    case string(AExpr a):
-      use += uses(a);
+    case string(str s, src = loc u):
+      use += { <u, s> };
     
     case multiplication(AExpr a, AExpr b): {
       use += uses(a);

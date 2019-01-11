@@ -17,14 +17,17 @@ alias TEnv = rel[loc def, str name, str label, Type \type];
 // To avoid recursively traversing the form, use the `visit` construct
 // or deep match (e.g., `for (/question(...) := f) {...}` ) 
 TEnv collect(AForm f) {
-  return {}; 
+  return {};
 }
 
 set[Message] check(AForm f, TEnv tenv, UseDef useDef) {
   set[Message] msgs = {};
+  
   for (q <- f.questions) {
     msgs += check(q, tenv, useDef);
-  }  
+  }
+  
+  return msgs;
 }
 
 // - produce an error if there are declared questions with the same name but different types.
@@ -34,9 +37,9 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
   set[Message] msgs = {};
   
   switch (q) {
-    case regular(str name, str id, AType typ, src = loc u): {
-      return;
+    case regular(str label, str id, AType typ, src = loc u): {
       // msgs += { error("Duplicate question name with different type.", u) | tenv.type = true };
+      
     }
   }
   
@@ -53,7 +56,7 @@ set[Message] check(AExpr e, TEnv tenv, UseDef useDef) {
     case ref(str x, src = loc u):
       msgs += { error("Undeclared question", u) | useDef[u] == {} };
 
-    // etc.
+    
   }
   
   return msgs; 
