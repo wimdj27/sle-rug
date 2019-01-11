@@ -35,7 +35,8 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
   
   switch (q) {
     case regular(str name, str id, AType typ, src = loc u): {
-      msgs += { error("Duplicate question name with different type.", u) | tenv.type = true };
+      return;
+      // msgs += { error("Duplicate question name with different type.", u) | tenv.type = true };
     }
   }
   

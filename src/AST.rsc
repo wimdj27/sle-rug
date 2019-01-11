@@ -15,8 +15,8 @@ data AQuestion(loc src = |tmp:///|)
   = regular(str label, str id, AType typ)
   | computed(str label, str id, AType typ, AExpr expr)
   | qlist(list[AQuestion] questions)
-  | ifthenelse(list[AQuestion] ifqs, list[AQuestion] elseqs)
-  | ifthen(list[AQuestion] ifqs)
+  | ifthenelse(AExpr expr, list[AQuestion] ifqs, list[AQuestion] elseqs)
+  | ifthen(AExpr expr, list[AQuestion] ifqs)
   | empty(str empty)
   ;
 

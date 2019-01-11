@@ -32,11 +32,11 @@ AQuestion cst2ast(Question q) {
     case (Question) `{ <Question* qs> }`:
       return qlist([cst2ast(q) | Question q <- qs], src=q@\loc);
       
-    case (Question) `if ( <Id x> ) { <Question* ifqs> } else { <Question* elseqs> }`:
-      return ifthenelse([cst2ast(q) | Question q <- ifqs], [cst2ast(q) | Question q <- elseqs],  src=q@\loc);
+    case (Question) `if ( <Expr e> ) { <Question* ifqs> } else { <Question* elseqs> }`:
+      return ifthenelse(cst2ast(e), [cst2ast(q) | Question q <- ifqs], [cst2ast(q) | Question q <- elseqs],  src=q@\loc);
     
-    case (Question) `if ( <Id x> ) { <Question* qs> }`:
-      return ifthen([cst2ast(q) | Question q <- qs], src=q@\loc);
+    case (Question) `if ( <Expr e> ) { <Question* qs> }`:
+      return ifthen(cst2ast(e), [cst2ast(q) | Question q <- qs], src=q@\loc);
      
     case (Question) ``: // empty question
       return empty("");

@@ -15,8 +15,8 @@ syntax Question
   = Str Id ":" Type
   | Str Id ":" Type "=" Expr
   | "{" Question* "}"
-  | "if" "(" Id ")" "{" Question* "}" "else" "{" Question* "}"
-  | "if" "(" Id ")" "{" Question* "}"
+  | "if" "(" Expr ")" "{" Question* "}" "else" "{" Question* "}"
+  | "if" "(" Expr ")" "{" Question* "}"
   | ""
   | "//" [a-zA-Z0-9_]*
   ; 
