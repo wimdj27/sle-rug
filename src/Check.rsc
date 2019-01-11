@@ -21,10 +21,22 @@ TEnv collect(AForm f) {
   
   visit(f) {
     case regular(str label, str id, AType typ, src = loc def):
-      tenv += <def, name, label, tint()>;
+      tenv += <def, name, label, toType(typ)>;
+    
+    case computed(str label, str id, AType typ, AExpr expr, src = loc def):
+      tenv += <def, name, label, toType(typ)>;
   }
   
   return tenv;
+}
+
+Type toType(AType t) {
+  switch (t) {
+    case string(): return tstr();
+    case integer(): return tint();
+    case boolean(): return tbool();
+    default: return tunknown();
+  }
 }
 
 set[Message] check(AForm f, TEnv tenv, UseDef useDef) {
@@ -47,6 +59,7 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
     case regular(str label, str id, AType typ, src = loc u): {
       // msgs += { error("Duplicate question name with different type.", u) | tenv.type = true };
       ;
+      
     }
   }
   
@@ -62,6 +75,118 @@ set[Message] check(AExpr e, TEnv tenv, UseDef useDef) {
   switch (e) {
     case ref(str x, src = loc u):
       msgs += { error("Undeclared question", u) | useDef[u] == {} };
+      
+    case multiplication(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      msgs += { error("Type incompatibility", u) | typeA != tint() };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    }
+      
+    case division(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      msgs += { error("Type incompatibility", u) | typeA != tint() };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    }
+    
+    case addition(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      msgs += { error("Type incompatibility", u) | typeA != tint() };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    } 
+      
+    case subtraction(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      msgs += { error("Type incompatibility", u) | typeA != tint() };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    }
+      
+    case greater(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      msgs += { error("Type incompatibility", u) | typeA == tstr() };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    }
+      
+    case smaller(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      msgs += { error("Type incompatibility", u) | typeA == tstr() };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    }
+      
+    case greatereq(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      msgs += { error("Type incompatibility", u) | typeA == tstr() };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    }
+      
+    case smallereq(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      msgs += { error("Type incompatibility", u) | typeA == tstr() };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    }
+      
+    case not(AExpr a, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != tbool() };
+      check(a, tenv, useDef);
+    }
+      
+    case equal(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    }
+      
+    case noteq(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    }
+      
+    case and(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      msgs += { error("Type incompatibility", u) | typeA != tbool() };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    }
+      
+    case or(AExpr a, AExpr b, src = loc u): {
+      typeA = typeOf(a, tenv, useDef);
+      typeB = typeOf(b, tenv, useDef);
+      msgs += { error("Type incompatibility", u) | typeA != typeB };
+      msgs += { error("Type incompatibility", u) | typeA != tbool() };
+      check(a, tenv, useDef);
+      check(b, tenv, useDef);
+    }
 
     
   }

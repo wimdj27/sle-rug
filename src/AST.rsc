@@ -22,9 +22,9 @@ data AQuestion(loc src = |tmp:///|)
 
 data AExpr(loc src = |tmp:///|)
   = ref(str name)
-  | integer(AExpr a)
-  | boolean(AExpr a)
-  | string(AExpr a)
+  | integer(int i)
+  | boolean(bool b)
+  | string(str s)
   | multiplication(AExpr a, AExpr b)
   | division(AExpr a, AExpr b)
   | addition(AExpr a, AExpr b)
@@ -41,6 +41,7 @@ data AExpr(loc src = |tmp:///|)
   ;
 
 data AType(loc src = |tmp:///|)
-  = boolean()
+  = string()
   | integer()
+  | boolean()
   ;

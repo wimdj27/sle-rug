@@ -38,8 +38,9 @@ syntax Expr
   ;
   
 syntax Type
-  = "boolean"
-  | "integer";
+  = "string"
+  | "integer"
+  | "boolean";
   
 lexical Str 
   = "\"" [a-zA-Z0-9_]* "\"";
