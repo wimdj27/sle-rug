@@ -12,8 +12,8 @@ data AForm(loc src = |tmp:///|)
   ; 
 
 data AQuestion(loc src = |tmp:///|)
-  = regular(str name, str id, AType typ)
-  | computed(str name, str id, AType typ, AExpr expr)
+  = regular(str label, str id, AType typ)
+  | computed(str label, str id, AType typ, AExpr expr)
   | qlist(list[AQuestion] questions)
   | ifthenelse(list[AQuestion] ifqs, list[AQuestion] elseqs)
   | ifthen(list[AQuestion] ifqs)

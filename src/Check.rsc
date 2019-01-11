@@ -21,14 +21,25 @@ TEnv collect(AForm f) {
 }
 
 set[Message] check(AForm f, TEnv tenv, UseDef useDef) {
-  return {}; 
+  set[Message] msgs = {};
+  for (q <- f.questions) {
+    msgs += check(q, tenv, useDef);
+  }  
 }
 
 // - produce an error if there are declared questions with the same name but different types.
 // - duplicate labels should trigger a warning 
 // - the declared type computed questions should match the type of the expression.
 set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
-  return {}; 
+  set[Message] msgs = {};
+  
+  switch (q) {
+    case regular(str name, str id, AType typ, src = loc u): {
+      msgs += { error("Duplicate question name with different type.", u) | tenv.type = true };
+    }
+  }
+  
+  return msgs;
 }
 
 // Check operand compatibility with operators.
@@ -71,4 +82,6 @@ Type typeOf(AExpr e, TEnv tenv, UseDef useDef) {
  */
  
  
-
+ 
+ 
+ 
