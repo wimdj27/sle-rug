@@ -73,7 +73,11 @@ VEnv eval(AForm f, Input inp, VEnv venv) {
 }
 
 VEnv evalOnce(AForm f, Input inp, VEnv venv) {
-  return (); 
+  for (q <- f.questions) {
+    venv = eval(q, inp, venv);
+  }
+  
+  return venv;
 }
 
 VEnv eval(AQuestion q, Input inp, VEnv venv) {
@@ -81,30 +85,34 @@ VEnv eval(AQuestion q, Input inp, VEnv venv) {
   // evaluate inp and computed questions to return updated VEnv
   
   switch (q) {
-    case regular(str label, str id, AType typ, src = loc u): {
+    case regular(str label, str id, AType typ, src = loc u):
       if (id == inp.question) venv[inp.question] = inp.\value;
-    }
     
-    case computed(str label, str id, AType typ, AExpr expr, src = loc u): {
+    case computed(str label, str id, AType typ, AExpr expr, src = loc u):
       venv[id] = eval(expr, venv);
-    }
     
     case qlist(list[AQuestion] questions, src = loc u): {
-      ;
+      for (q <- questions) venv = eval(q, inp, venv);
     }
     
     case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
-      ;
+      if (eval(cond, venv).b) {
+        for (q <- ifqs) venv = eval(q, inp, venv);
+      } else {
+        for (q <- elseqs) venv = eval(q, inp, venv);
+      }
     }
     
     case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u): {
-      ;
+      if (eval(cond, venv).b) {
+        for (q <- ifqs) venv = eval(q, inp, venv);
+      }
     }
     
-    default: return msgs;
+    default: return venv;
   }
   
-  return venv; 
+  return venv;
 }
 
 Value eval(AExpr e, VEnv venv) {
