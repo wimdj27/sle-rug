@@ -70,8 +70,8 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
         msgs += { error("Duplicate question with different types", u) };
       }
       
-      if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1!=src2){
-      	msgs += { warning("Duplicate label",u) };
+      if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1 != src2) {
+      	msgs += { warning("Duplicate label", u) };
   	  } 
       
     }
@@ -83,8 +83,8 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
         msgs += { error("Duplicate question with different types", u) };
      }
       
-     if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1!=src2){
-      	msgs += { warning("Duplicate label",u) };
+     if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1 != src2) {
+      	msgs += { warning("Duplicate label", u) };
    	 } 
   
       
