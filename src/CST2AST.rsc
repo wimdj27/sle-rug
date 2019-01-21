@@ -32,11 +32,11 @@ AQuestion cst2ast(Question q) {
     case (Question) `{ <Question* qs> }`:
       return qlist([cst2ast(q) | Question q <- qs], src=q@\loc);
       
-    case (Question) `if ( <Expr e> ) { <Question* ifqs> } else { <Question* elseqs> }`:
-      return ifthenelse(cst2ast(e), [cst2ast(q) | Question q <- ifqs], [cst2ast(q) | Question q <- elseqs],  src=q@\loc);
+    case (Question) `if ( <Expr cond> ) { <Question* ifqs> } else { <Question* elseqs> }`:
+      return ifthenelse(cst2ast(cond), [cst2ast(q) | Question q <- ifqs], [cst2ast(q) | Question q <- elseqs],  src=q@\loc);
     
-    case (Question) `if ( <Expr e> ) { <Question* qs> }`:
-      return ifthen(cst2ast(e), [cst2ast(q) | Question q <- qs], src=q@\loc);
+    case (Question) `if ( <Expr cond> ) { <Question* qs> }`:
+      return ifthen(cst2ast(cond), [cst2ast(q) | Question q <- qs], src=q@\loc);
      
     case (Question) ``: // empty question
       return empty("");
@@ -56,8 +56,8 @@ AExpr cst2ast(Expr e) {
     case (Expr) `<Int i>`:
       return integer(i, src=i@\loc);
       
-    case (Expr) `<Bool b>`:
-      return boolean(b, src=b@\loc);
+    case (Expr) `<Bool bl>`:
+      return boolean(bl, src=bl@\loc);
       
     case (Expr) `<Str s>`:
       return string(s, src=s@\loc);

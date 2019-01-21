@@ -63,6 +63,11 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
         msgs += { error("Duplicate question with different types", u) };
       }
       
+      if ( (<x, _, _, _> <- tenv && <x, _, _, _> <- tenv )
+        || (<_, x, _, tint()> <- tenv && <_, x, _, tstr()> <- tenv )
+        || (<_, x, _, tbool()> <- tenv && <_, x, _, tstr()> <- tenv )) {
+        msgs += { error("Duplicate question with different types", u) };
+      }
       
     }
     
@@ -75,12 +80,30 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
       
       msgs += check(expr, tenv, useDef);
       
-      msgs += { error("Declared type does not match expression type", u) | typeOf(expr, tenv, useDef) != toType(typ) };
+      msgs += { error("Declared type does not match expression type", u) | 
+                typeOf(expr, tenv, useDef) != toType(typ) };
     }
     
     case qlist(list[AQuestion] questions, src = loc u): {
-      return;
+      msgs += [ check(q, tenv, useDef) | q <- questions ];
     }
+    
+    case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
+      msgs += { error("Condition is not boolean", u) | typeOf(cond, tenv, useDef) != tbool() };
+      
+      msgs += check(cond, tenv, useDef);
+      msgs += [ check(q, tenv, useDef) | q <- ifqs ];
+      msgs += [ check(q, tenv, useDef) | q <- elseqs ];
+    }
+    
+    case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u): {
+      msgs += { error("Condition is not boolean", u) | typeOf(cond, tenv, useDef) != tbool() };
+      
+      msgs += check(cond, tenv, useDef);
+      msgs += [ check(q, tenv, useDef) | q <- ifqs ];
+    }
+    
+    default: return msgs;
   }
   
   return msgs;

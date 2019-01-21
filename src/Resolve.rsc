@@ -37,14 +37,14 @@ Use uses(AQuestion q) {
     case computed(str label, str id, AType typ, AExpr expr, src = loc u):
       use += uses(expr);
     
-    case ifthenelse(AExpr expr, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
-      use += uses(expr);
+    case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
+      use += uses(cond);
       use += { uses(question) | question <- ifqs };
       use += { uses(question) | question <- elseqs };
     }
     
-    case ifthen(AExpr expr, list[AQuestion] ifqs, src = loc u): {
-      use += uses(expr);
+    case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u): {
+      use += uses(cond);
       use += { uses(question) | question <- ifqs };
     }
     
