@@ -56,6 +56,7 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
   set[Message] msgs = {};
   
   switch (q) {
+  
     case regular(str label, str id, AType typ, src = loc u): {
       if ( (<_, x, _, tint()> <- tenv && <_, x, _, tbool()> <- tenv )
         || (<_, x, _, tint()> <- tenv && <_, x, _, tstr()> <- tenv )
@@ -69,14 +70,23 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
         msgs += { error("Duplicate question with different types", u) };
       }
       
+      if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1!=src2){
+      	msgs += { warning("Duplicate label",src1) };
+  	  } 
+      
     }
     
     case computed(str label, str id, AType typ, AExpr expr, src = loc u): {
-      if ( (<_, x, _, tint()> <- tenv && <_, x, _, tbool()> <- tenv )
+     if ( (<_, x, _, tint()> <- tenv && <_, x, _, tbool()> <- tenv )
         || (<_, x, _, tint()> <- tenv && <_, x, _, tstr()> <- tenv )
         || (<_, x, _, tbool()> <- tenv && <_, x, _, tstr()> <- tenv )) {
         msgs += { error("Duplicate question with different types", u) };
-      }
+     }
+      
+     if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1!=src2){
+      	msgs += { warning("Duplicate label",src1) };
+   	 } 
+  
       
       msgs += check(expr, tenv, useDef);
       
@@ -247,10 +257,10 @@ Type typeOf(AExpr e, TEnv tenv, UseDef useDef) {
     case integer(int i):
       return tint();
       
-    case boolean(AExpr a):
+    case boolean(bool bl):
       return tbool();
     
-    case string(AExpr a):
+    case string(str s):
       return tstring();
     
     case multiplication(AExpr a, AExpr b):
