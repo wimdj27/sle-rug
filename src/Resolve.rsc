@@ -60,15 +60,6 @@ Use uses(AExpr e) {
   switch(e) {
     case ref(str name, src = loc u):
       use += { <u, name> };
-      
-    case integer(int i, src = loc u):
-      use += { <u, toString(i)> };
-      
-    case boolean(bool b, src = loc u):
-      use += { <u, toString(b)> };
-    
-    case string(str s, src = loc u):
-      use += { <u, s> };
     
     case multiplication(AExpr a, AExpr b): {
       use += uses(a);
@@ -132,6 +123,8 @@ Use uses(AExpr e) {
       use += uses(a);
       use += uses(b);
     }
+    
+    default: return use;
   }
   
   return use;
