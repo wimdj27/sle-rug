@@ -71,7 +71,7 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
       }
       
       if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1!=src2){
-      	msgs += { warning("Duplicate label",src1) };
+      	msgs += { warning("Duplicate label",u) };
   	  } 
       
     }
@@ -84,7 +84,7 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
      }
       
      if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1!=src2){
-      	msgs += { warning("Duplicate label",src1) };
+      	msgs += { warning("Duplicate label",u) };
    	 } 
   
       
