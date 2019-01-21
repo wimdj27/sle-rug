@@ -79,7 +79,7 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
     }
     
     case qlist(list[AQuestion] questions, src = loc u): {
-      
+      return;
     }
   }
   
