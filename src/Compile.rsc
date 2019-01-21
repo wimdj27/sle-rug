@@ -24,7 +24,15 @@ void compile(AForm f) {
 }
 
 HTML5Node form2html(AForm f) {
-  return html();
+  return html(
+           script(src("https://cdn.jsdelivr.net/npm/vue")),
+           head( 
+             title(f.name)
+           ),
+           body(
+             h2(f.name)
+           )
+         );
 }
 
 str form2js(AForm f) {
