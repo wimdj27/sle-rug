@@ -5,6 +5,7 @@ import AST;
 
 import ParseTree;
 import String;
+import Boolean;
 
 /*
  * Implement a mapping from concrete syntax trees (CSTs) to abstract syntax trees (ASTs)
@@ -60,10 +61,10 @@ AExpr cst2ast(Expr e) {
       return ref("<x>", src=x@\loc);
       
     case (Expr) `<Int i>`:
-      return integer(i, src=i@\loc);
+      return integer(toInt("<i>"), src=i@\loc);
       
     case (Expr) `<Bool bl>`:
-      return boolean(bl, src=bl@\loc);
+      return boolean(fromString("<bl>"), src=bl@\loc);
       
     case (Expr) `<Str s>`:
       return string("<s>", src=s@\loc);

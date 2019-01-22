@@ -8,6 +8,9 @@ form taxOfficeExample {
   "Did you sell a house in 2010?"
     hasSoldHouse: boolean
     
+  "What is the name of your dog?"
+    dogName: string = "dog" + 2
+    
   if (hasSodHouse) {
     "What was the selling price?"
       sellingPrice: boolean
