@@ -158,7 +158,7 @@ Def defs(AQuestion q) {
       
     case ifthenelse(AExpr expr, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): {
       for (qt <- ifqs) def += defs(qt);
-      for (qt <- ifqs) def += defs(qt);
+      for (qt <- elseqs) def += defs(qt);
     }
     
     case ifthen(AExpr expr, list[AQuestion] ifqs): 
