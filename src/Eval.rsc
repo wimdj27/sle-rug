@@ -26,7 +26,7 @@ data Input = input(str question, Value \value);
 // produce an environment which for each question has a default value
 // (e.g. 0 for int, "" for str etc.)
 VEnv initialEnv(AForm f) {
-  VEnv = venv = {};
+  VEnv venv = ();
   
   visit(f) {
     case regular(str label, str id, AType typ, src = loc def): {
