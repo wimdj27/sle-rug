@@ -17,7 +17,6 @@ syntax Question
   | "{" Question* "}"
   | "if" "(" Expr ")" "{" Question* "}" "else" "{" Question* "}"
   | "if" "(" Expr ")" "{" Question* "}"
-  | ""
   | "//" [a-zA-Z0-9_]*
   ; 
 

@@ -30,7 +30,13 @@ HTML5Node form2html(AForm f) {
              title(f.name)
            ),
            body(
-             h2(f.name)
+             h2(f.name),
+             div(
+               id("form"),
+               form(
+                 p([ question2html(q) | q <- f.questions ])
+               )
+             )
            )
          );
 }

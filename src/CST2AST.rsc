@@ -16,9 +16,15 @@ import String;
  * - See the ref example on how to obtain and propagate source locations.
  */
   
-AForm cst2ast(f: (Form) `form <Id x> { <Question* qs> }`) {
+AForm cst2ast(start[Form] sf) {
   f = sf.top; // remove layout before and after form
-  return form("<x>", [ cst2ast(q) | Question q <- qs ], src=f@\loc); 
+  
+  switch (f) {
+    case (Form) `form <Id x> { <Question* qs> }`:
+      return form(f.name, [ cst2ast(q) | Question q <- qs ], src=f@\loc); 
+    
+    default: throw "Invalid form: <f>";
+  }
 }
 
 AQuestion cst2ast(Question q) {
@@ -101,7 +107,7 @@ AExpr cst2ast(Expr e) {
     case (Expr) `<Expr a> || <Expr b>`:
       return or(cst2ast(a), cst2ast(b), src=e@\loc);
         
-    default: throw "Unhandled expression: <e>";
+    default: throw "Invalid expression: <e>";
   }
 }
 
