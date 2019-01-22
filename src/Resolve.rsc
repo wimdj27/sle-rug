@@ -151,17 +151,17 @@ Def defs(AQuestion q) {
       def += { <id, d> };
       
     case qlist(list[AQuestion] questions, src = loc d):
-      def += { defs(question) | question <- questions };
+      for (qt <- questions) def += defs(qt);
       
     case ifthenelse(AExpr expr, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): {
-      def += { defs(question) | question <- ifqs };
-      def += { defs(question) | question <- elseqs };
+      for (qt <- ifqs) def += defs(qt);
+      for (qt <- ifqs) def += defs(qt);
     }
     
     case ifthen(AExpr expr, list[AQuestion] ifqs): 
-      def += { defs(question) | question <- ifqs };
+      for (qt <- ifqs) def += defs(qt);
       
-    default: return;
+    default: return def;
   }
   
   return def;
