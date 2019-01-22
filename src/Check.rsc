@@ -21,10 +21,10 @@ TEnv collect(AForm f) {
   
   visit(f) {
     case regular(str label, str id, AType typ, src = loc def):
-      tenv += <def, name, label, toType(typ)>;
+      tenv += <def, id, label, toType(typ)>;
     
     case computed(str label, str id, AType typ, AExpr expr, src = loc def):
-      tenv += <def, name, label, toType(typ)>;
+      tenv += <def, id, label, toType(typ)>;
   }
   
   return tenv;
@@ -95,22 +95,20 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
     }
     
     case qlist(list[AQuestion] questions, src = loc u): {
-      msgs += [ check(q, tenv, useDef) | q <- questions ];
+      for (q <- questions) msgs += check(q, tenv, useDef);
     }
     
     case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
       msgs += { error("Condition is not boolean", u) | typeOf(cond, tenv, useDef) != tbool() };
-      
       msgs += check(cond, tenv, useDef);
-      msgs += [ check(q, tenv, useDef) | q <- ifqs ];
-      msgs += [ check(q, tenv, useDef) | q <- elseqs ];
+      for (q <- ifqs) msgs += check(q, tenv, useDef);
+      for (q <- elseqs) msgs += check(q, tenv, useDef);
     }
     
     case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u): {
       msgs += { error("Condition is not boolean", u) | typeOf(cond, tenv, useDef) != tbool() };
-      
       msgs += check(cond, tenv, useDef);
-      msgs += [ check(q, tenv, useDef) | q <- ifqs ];
+      for (q <- ifqs) msgs += check(q, tenv, useDef);
     }
     
     default: return msgs;
