@@ -39,16 +39,16 @@ Use uses(AQuestion q) {
     
     case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
       use += uses(cond);
-      use += { uses(question) | question <- ifqs };
-      use += { uses(question) | question <- elseqs };
+      for (qt <- ifqs) use += uses(qt);
+      for (qt <- elseqs) use += uses(qt);
     }
     
     case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u): {
       use += uses(cond);
-      use += { uses(question) | question <- ifqs };
+      for (qt <- ifqs) use += uses(qt);
     }
     
-    default: return;
+    default: return use;
   }
   
   return use;
