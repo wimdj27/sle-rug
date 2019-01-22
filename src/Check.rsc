@@ -42,6 +42,13 @@ Type toType(AType t) {
 set[Message] check(AForm f, TEnv tenv, UseDef useDef) {
   set[Message] msgs = {};
   
+  if ( (<loc1, x, _, tint()> <- tenv && <loc2, x, _, tbool()> <- tenv )
+        || (<loc1, x, _, tint()> <- tenv && <loc2, x, _, tstr()> <- tenv )
+        || (<loc1, x, _, tbool()> <- tenv && <loc2, x, _, tstr()> <- tenv )) {
+        msgs += { error("Duplicate question with different types", loc1) };
+        msgs += { error("Duplicate question with different types", loc2) };
+  }
+  
   for (q <- f.questions) {
     msgs += check(q, tenv, useDef);
   }
@@ -58,12 +65,6 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
   switch (q) {
   
     case regular(str label, str id, AType typ, src = loc u): {
-      if ( (<_, x, _, tint()> <- tenv && <_, x, _, tbool()> <- tenv )
-        || (<_, x, _, tint()> <- tenv && <_, x, _, tstr()> <- tenv )
-        || (<_, x, _, tbool()> <- tenv && <_, x, _, tstr()> <- tenv )) {
-        msgs += { error("Duplicate question with different types", u) };
-      }
-      
       if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1 != src2) {
       	msgs += { warning("Duplicate label", u) };
   	  } 
@@ -71,11 +72,7 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
     }
     
     case computed(str label, str id, AType typ, AExpr expr, src = loc u): {
-     if ( (<_, x, _, tint()> <- tenv && <_, x, _, tbool()> <- tenv )
-        || (<_, x, _, tint()> <- tenv && <_, x, _, tstr()> <- tenv )
-        || (<_, x, _, tbool()> <- tenv && <_, x, _, tstr()> <- tenv )) {
-        msgs += { error("Duplicate question with different types", u) };
-     }
+     
       
      if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1 != src2) {
       	msgs += { warning("Duplicate label", u) };
