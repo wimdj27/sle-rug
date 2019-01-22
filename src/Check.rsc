@@ -112,6 +112,9 @@ set[Message] check(AExpr e, TEnv tenv, UseDef useDef) {
   set[Message] msgs = {};
   
   switch (e) {
+    case parentheses(AExpr a, src = loc u): 
+      msgs += check(a, tenv, useDef);
+  
     case ref(str x, src = loc u):
       msgs += { error("Undeclared question", u) | useDef[u] == {} };
       
