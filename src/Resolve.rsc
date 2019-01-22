@@ -154,15 +154,15 @@ Def defs(AQuestion q) {
       def += { <id, d> };
       
     case qlist(list[AQuestion] questions, src = loc d):
-      for (qt <- questions) def += defs(qt);
+      for (AQuestion qt <- questions) def += defs(qt);
       
     case ifthenelse(AExpr expr, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): {
-      for (qt <- ifqs) def += defs(qt);
-      for (qt <- elseqs) def += defs(qt);
+      for (AQuestion qt <- ifqs) def += defs(qt);
+      for (AQuestion qt <- elseqs) def += defs(qt);
     }
     
     case ifthen(AExpr expr, list[AQuestion] ifqs): 
-      for (qt <- ifqs) def += defs(qt);
+      for (AQuestion qt <- ifqs) def += defs(qt);
       
     default: return def;
   }
