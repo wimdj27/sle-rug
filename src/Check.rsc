@@ -72,12 +72,9 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
     }
     
     case computed(str label, str id, AType typ, AExpr expr, src = loc u): {
-     
-      
      if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1 != src2) {
       	msgs += { warning("Duplicate label", u) };
    	 } 
-  
       
       msgs += check(expr, tenv, useDef);
       
@@ -250,7 +247,7 @@ Type typeOf(AExpr e, TEnv tenv, UseDef useDef) {
       return tbool();
     
     case string(str s):
-      return tstring();
+      return tstr();
     
     case multiplication(AExpr a, AExpr b):
       return tint();

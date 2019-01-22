@@ -66,7 +66,7 @@ AExpr cst2ast(Expr e) {
       return boolean(bl, src=bl@\loc);
       
     case (Expr) `<Str s>`:
-      return string(s, src=s@\loc);
+      return string("<s>", src=s@\loc);
       
     case (Expr) `<Expr a> * <Expr b>`:
       return multiplication(cst2ast(a), cst2ast(b), src=e@\loc);
@@ -118,6 +118,9 @@ AType cst2ast(Type t) {
   	  
   	case (Type) `integer`:
   	  return integer();
+  	  
+  	case (Type) `string`:
+  	  return string();
   	  
   	default: throw "Unknown type: <t>";
   }
