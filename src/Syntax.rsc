@@ -29,8 +29,8 @@ syntax Expr
   | Int
   | Bool
   | Str
-  > left (Expr "*" Expr | Expr "/" Expr)
-  > left (Expr "+" Expr | Expr "-" Expr)
+  > left ( left Expr "*" Expr | left Expr "/" Expr)
+  > left ( left Expr "+" Expr | left Expr "-" Expr)
   > non-assoc (Expr "\>" Expr | Expr "\<" Expr | Expr "\>=" Expr | Expr "\<=" Expr)
   > "!" Expr
   > left (Expr "==" Expr | Expr "!=" Expr)
