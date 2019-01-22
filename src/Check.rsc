@@ -296,6 +296,8 @@ Type typeOf(AExpr e, TEnv tenv, UseDef useDef) {
     
     default: return tunknown();
   }
+  
+  return tunknown();
 }
 
 /* 
