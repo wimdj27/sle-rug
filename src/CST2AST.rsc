@@ -21,7 +21,7 @@ AForm cst2ast(start[Form] sf) {
   
   switch (f) {
     case (Form) `form <Id x> { <Question* qs> }`:
-      return form(f.name, [ cst2ast(q) | Question q <- qs ], src=f@\loc); 
+      return form("<x>", [ cst2ast(q) | Question q <- qs ], src=f@\loc); 
     
     default: throw "Invalid form: <f>";
   }
