@@ -58,6 +58,9 @@ Use uses(AExpr e) {
   Use use = {};
   
   switch(e) {
+    case parentheses(AExpr a, src = loc u):
+      use += uses(a);
+    
     case ref(str name, src = loc u):
       use += { <u, name> };
     

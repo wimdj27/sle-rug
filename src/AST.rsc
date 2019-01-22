@@ -20,7 +20,8 @@ data AQuestion(loc src = |tmp:///|)
   ;
 
 data AExpr(loc src = |tmp:///|)
-  = ref(str name)
+  = parentheses(AExpr a)
+  | ref(str name)
   | integer(int i)
   | boolean(bool bl)
   | string(str s)

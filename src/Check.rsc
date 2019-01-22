@@ -64,12 +64,6 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
         msgs += { error("Duplicate question with different types", u) };
       }
       
-      if ( (<x, _, _, _> <- tenv && <x, _, _, _> <- tenv )
-        || (<_, x, _, tint()> <- tenv && <_, x, _, tstr()> <- tenv )
-        || (<_, x, _, tbool()> <- tenv && <_, x, _, tstr()> <- tenv )) {
-        msgs += { error("Duplicate question with different types", u) };
-      }
-      
       if( <src1, _, label, _> <- tenv && <src2, _, label, _> <- tenv && src1 != src2) {
       	msgs += { warning("Duplicate label", u) };
   	  } 

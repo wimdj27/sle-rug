@@ -53,6 +53,9 @@ AQuestion cst2ast(Question q) {
 
 AExpr cst2ast(Expr e) {
   switch (e) {
+    case (Expr) `( <Expr a> )`:
+      return parentheses(cst2ast(a), src=e@\loc);
+    
     case (Expr) `<Id x>`: 
       return ref("<x>", src=x@\loc);
       

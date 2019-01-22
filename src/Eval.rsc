@@ -117,6 +117,9 @@ VEnv eval(AQuestion q, Input inp, VEnv venv) {
 
 Value eval(AExpr e, VEnv venv) {
   switch (e) {
+    case parentheses(AExpr a):
+      return eval(a);
+    
     case ref(str x): return venv[x];
     
     case integer(int i):
