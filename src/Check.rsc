@@ -49,7 +49,7 @@ set[Message] check(AForm f, TEnv tenv, UseDef useDef) {
         msgs += { error("Duplicate question with different types", loc2) };
   }
   
-  for (q <- f.questions) {
+  for (AQuestion q <- f.questions) {
     msgs += check(q, tenv, useDef);
   }
   
@@ -83,20 +83,20 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
     }
     
     case qlist(list[AQuestion] questions, src = loc u): {
-      for (q <- questions) msgs += check(q, tenv, useDef);
+      for (AQuestion q <- questions) msgs += check(q, tenv, useDef);
     }
     
     case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
       msgs += { error("Condition is not boolean", u) | typeOf(cond, tenv, useDef) != tbool() };
       msgs += check(cond, tenv, useDef);
-      for (q <- ifqs) msgs += check(q, tenv, useDef);
-      for (q <- elseqs) msgs += check(q, tenv, useDef);
+      for (AQuestion q <- ifqs) msgs += check(q, tenv, useDef);
+      for (AQuestion q <- elseqs) msgs += check(q, tenv, useDef);
     }
     
     case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u): {
       msgs += { error("Condition is not boolean", u) | typeOf(cond, tenv, useDef) != tbool() };
       msgs += check(cond, tenv, useDef);
-      for (q <- ifqs) msgs += check(q, tenv, useDef);
+      for (AQuestion q <- ifqs) msgs += check(q, tenv, useDef);
     }
     
     default: return msgs;
@@ -243,6 +243,9 @@ Type typeOf(AExpr e, TEnv tenv, UseDef useDef) {
         return t;
       }
     
+    case parentheses(AExpr expr): 
+    	return typeOf(expr, tenv, useDef);
+    	
     case integer(int i):
       return tint();
       
