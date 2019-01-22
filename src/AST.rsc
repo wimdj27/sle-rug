@@ -17,7 +17,6 @@ data AQuestion(loc src = |tmp:///|)
   | qlist(list[AQuestion] questions)
   | ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs)
   | ifthen(AExpr cond, list[AQuestion] ifqs)
-  | empty(str empty)
   ;
 
 data AExpr(loc src = |tmp:///|)

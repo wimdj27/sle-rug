@@ -27,13 +27,13 @@ AForm cst2ast(start[Form] sf) {
   }
 }
 
-AQuestion cst2ast(Question q) {
+AQuestion cst2ast(q:Question q) {
   switch (q) {
     case (Question) `<Str s> <Id x> : <Type t>`:
-      return regular("<s>", "<t>", "<x>", src=q@\loc);
+      return regular("<s>", "<x>", cst2ast(t), src=q@\loc);
     
     case (Question) `<Str s> <Id x> : <Type t> = <Expr e>`:
-      return computed("<s>", "<t>", "<x>", cst2ast(e), src=q@\loc);
+      return computed("<s>", "<x>", cst2ast(t), cst2ast(e), src=q@\loc);
       
     case (Question) `{ <Question* qs> }`:
       return qlist([cst2ast(q) | Question q <- qs], src=q@\loc);
@@ -43,9 +43,6 @@ AQuestion cst2ast(Question q) {
     
     case (Question) `if ( <Expr cond> ) { <Question* qs> }`:
       return ifthen(cst2ast(cond), [cst2ast(q) | Question q <- qs], src=q@\loc);
-     
-    case (Question) ``: // empty question
-      return empty("");
       
     case (Question) `// _`:
       return empty("");
