@@ -43,7 +43,7 @@ syntax Type
   | "boolean";
   
 lexical Str 
-  = "\"" [a-zA-Z0-9_]* "\"";
+  = "\"" [a-z A-Z 0-9 \ ?!:]* "\"";
 
 lexical Int 
   = [0-9]*;
