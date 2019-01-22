@@ -27,7 +27,7 @@ AForm cst2ast(start[Form] sf) {
   }
 }
 
-AQuestion cst2ast(q:Question q) {
+AQuestion cst2ast(Question q) {
   switch (q) {
     case (Question) `<Str s> <Id x> : <Type t>`:
       return regular("<s>", "<x>", cst2ast(t), src=q@\loc);
