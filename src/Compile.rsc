@@ -3,7 +3,9 @@ module Compile
 import AST;
 import Resolve;
 import Eval;
+import Boolean;
 import IO;
+import util::Math;
 import lang::html5::DOM; // see standard library
 
 /*
@@ -91,22 +93,31 @@ HTML5Node question2html(AQuestion q, AForm f) {
   }
 }
 
+str valueToString(Value v){
+	switch(v){
+		case vint(int x): return toString(x);
+		case vbool(bool bl): return toString(bl);
+		case vstr(str s): return "\""+s+"\"";
+	}
+}
+
 str form2js(AForm f, VEnv venv) {
  str script = "var vue = new Vue({
  			  '       el: \'#vue\',
- 			  '     data: {";
+ 			  '    data: {";
  			  
  set[str] JSquestions = {};
- 
- for(str name <- venv){
-   JSquestions += name;
-   script += "\n   " + id + ": " + name.\value;
+ println(venv);
+ for(cur <- venv){
+   println(cur);
+   JSquestions += cur;
+   script += "\n        " + cur + ": " + valueToString(venv[cur]) + ",";
  }
 
   script += "\n    },
   		  ' 	methods: {";
 
- for(AQuestion q <- f){
+ for(AQuestion q <- f, q.id notin JSquestions){
   switch(q){
     case computed(str label, str id, AType typ, AExpr expr, src = loc def): {
     	JSquestions += id;
