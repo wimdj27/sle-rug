@@ -18,6 +18,9 @@ import lang::html5::DOM; // see standard library
  * - be sure to generate uneditable widgets for computed questions!
  * - if needed, use the name analysis to link uses to definitions
  */
+ 
+HTML5Attr vmodel(value val) = html5attr("v-model", val);
+HTML5Attr vif(value val) = html5attr("v-if", val);
 
 void compile(AForm f) {
   VEnv venv = initialEnv(f);
@@ -27,20 +30,65 @@ void compile(AForm f) {
 
 HTML5Node form2html(AForm f) {
   return html(
-           script(src("https://cdn.jsdelivr.net/npm/vue")),
-           head( 
-             title(f.name)
-           ),
-           body(
-             h2(f.name),
-             div(
-               id("form"),
-               form(
-                 p([ question2html(q) | q <- f.questions ])
-               )
-             )
-           )
-         );
+    script(src("https://cdn.jsdelivr.net/npm/vue")),
+    head( 
+      title(f.name)
+    ),
+    body(
+      h2(f.name),
+      div(
+        id("form"),
+        form(
+          [ question2html(q, f) | q <- f.questions ],
+          input(
+            \type("submit"),
+            \value("Submit")
+          )
+        )
+      )
+    )
+ );
+}
+
+HTML5Node question2html(AQuestion q, AForm f) {
+  switch (q) {
+    case regular(str l, str i, AType typ, src = loc d):
+      switch (typ) {
+        case string(): return html(p(label(l), input(\type("text"), id(i))));
+        
+        case integer(): return html(p(label(l), input(\type("number"), id(i))));
+        
+        case boolean(): return html(p(label(l), input(\type("checkbox"), id(i))));
+      }
+      
+    case computed(str l, str id, AType typ, AExpr expr, src = loc d):
+      return html(p(label(l), {{ /* value of expression */ }}));
+      
+    case qlist(list[AQuestion] questions, src = loc d):
+      for (AQuestion question <- questions) question2html(question);
+      
+    case ifthenelse(AExpr expr, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): 
+      return html(
+        p(
+          vif(expression2js(expr, f)),
+          [ question2html(question, f) | question <- ifqs ]
+        ),
+        p(
+          velse(),
+          [ question2html(question, f) | question <- elseqs ]
+        )
+      );
+    
+    case ifthen(AExpr expr, list[AQuestion] ifqs): 
+      return html(
+        p(
+          vif(expression2js(expr, f)),
+          [ question2html(question, f) | question <- ifqs ]
+        )
+      );
+            
+    default: return html();
+  }
 }
 
 HTML5Node question2html(AQuestion q){
@@ -78,4 +126,8 @@ str form2js(AForm f, VEnv venv) {
           '})";
       
   return script;
+}
+
+str expression2js(AExpr e, AForm f) {
+  return "";
 }
