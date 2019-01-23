@@ -91,10 +91,6 @@ HTML5Node question2html(AQuestion q, AForm f) {
   }
 }
 
-HTML5Node question2html(AQuestion q){
-return html();
-}
-
 str form2js(AForm f, VEnv venv) {
  str script = "var vue = new Vue({
  			  '       el: \'#vue\',
