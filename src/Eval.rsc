@@ -2,6 +2,7 @@ module Eval
 
 import AST;
 import Resolve;
+import IO;
 
 /*
  * Implement big-step semantics for QL
@@ -28,36 +29,30 @@ data Input = input(str question, Value \value);
 VEnv initialEnv(AForm f) {
   VEnv venv = ();
   
-  for (q <- f.questions) {
-    switch (q) {
-      case regular(str label, str id, AType typ, src = loc def): {
-        switch (typ) {
-          case tint(): 
-            venv += (id : vint(0));
-            
-          case tbool():
-            venv += (id : vbool(false));
-            
-          case tstr():
-            venv += (id : vstr(""));
+  visit(f) {
+    case regular(str label, str id, AType typ, src = loc def): {
+      switch (typ) {
+        case integer(): 
+          venv += (id : vint(0));
           
-          default: return venv;
-        }
+        case boolean():
+          venv += (id : vbool(false));
+          
+        case string():
+          venv += (id : vstr(""));
       }
-    
-      case computed(str label, str id, AType typ, AExpr expr, src = loc def): {
-        switch (typ) {
-          case tint(): 
-            venv += (id : vint(0));
-            
-          case tbool():
-            venv += (id : vbool(false));
-            
-          case tstr():
-            venv += (id : vstr(""));
+    }
+  
+    case computed(str label, str id, AType typ, AExpr expr, src = loc def): {
+      switch (typ) {
+        case integer(): 
+          venv += (id : vint(0));
           
-          default: return venv;
-        }
+        case boolean():
+          venv += (id : vbool(false));
+          
+        case string():
+          venv += (id : vstr(""));
       }
     }
   }
