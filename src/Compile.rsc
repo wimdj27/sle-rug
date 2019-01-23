@@ -7,6 +7,7 @@ import Boolean;
 import IO;
 import util::Math;
 import lang::html5::DOM; // see standard library
+// import DOM;
 
 /*
  * Implement a compiler for QL to HTML and Javascript
@@ -32,7 +33,7 @@ void compile(AForm f) {
 
 HTML5Node form2html(AForm f) {
   return html(
-    script(src("https://cdn.jsdelivr.net/npm/vue")),
+    script(src("https://cdn.jsdelivr.net/npm/vue@2.5.22/dist/vue.js")),
     head( 
       title(f.name)
     ),
@@ -41,7 +42,9 @@ HTML5Node form2html(AForm f) {
       div(
         id("form"),
         form(
-          [ question2html(q, f) | q <- f.questions ],
+          div(
+            [ question2html(q, f) | q <- f.questions ]
+          ),
           input(
             \type("submit"),
             \value("Submit")
@@ -56,40 +59,37 @@ HTML5Node question2html(AQuestion q, AForm f) {
   switch (q) {
     case regular(str l, str i, AType typ, src = loc d):
       switch (typ) {
-        case string(): return html(p(label(l), input(\type("text"), id(i))));
+        case string(): return p(HTML5Node::label(l), input(\type("text")));
         
-        case integer(): return html(p(label(l), input(\type("number"), id(i))));
+        case integer(): return p(HTML5Node::label(l), input(\type("number")));
         
-        case boolean(): return html(p(label(l), input(\type("checkbox"), id(i))));
+        case boolean(): return p(HTML5Node::label(l), input(\type("checkbox")));
       }
       
-    case computed(str l, str id, AType typ, AExpr expr, src = loc d):
-      return html(p(label(l), {{ /* value of expression */ }}));
+    case computed(str l, str i, AType typ, AExpr expr, src = loc d):
+      return p(HTML5Node::label(l), "{{ id() }}");
       
     case qlist(list[AQuestion] questions, src = loc d):
       for (AQuestion question <- questions) question2html(question);
       
     case ifthenelse(AExpr expr, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): 
-      return html(
-        p(
+      return div(
+        div(
           vif(expression2js(expr, f)),
           [ question2html(question, f) | question <- ifqs ]
         ),
-        p(
-          velse(),
+        div(
+          vif("!" + expression2js(expr, f)),
           [ question2html(question, f) | question <- elseqs ]
         )
       );
     
     case ifthen(AExpr expr, list[AQuestion] ifqs): 
-      return html(
-        p(
-          vif(expression2js(expr, f)),
-          [ question2html(question, f) | question <- ifqs ]
-        )
+      return div(vif(expression2js(expr, f)),
+        [ question2html(question, f) | question <- ifqs ]
       );
             
-    default: return html();
+    default: return p();
   }
 }
 
