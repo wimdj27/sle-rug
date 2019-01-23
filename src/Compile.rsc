@@ -43,7 +43,7 @@ HTML5Node form2html(AForm f) {
         id("form"),
         form(
           div(
-            [ question2html(q, f) | q <- f.questions ]
+            [ question2html(q, f, "true") | q <- f.questions ]
           ),
           input(
             \type("submit"),
@@ -55,38 +55,36 @@ HTML5Node form2html(AForm f) {
  );
 }
 
-HTML5Node question2html(AQuestion q, AForm f) {
+HTML5Node question2html(AQuestion q, AForm f, str condition) {
   switch (q) {
     case regular(str l, str i, AType typ, src = loc d):
       switch (typ) {
-        case string(): return p(HTML5Node::label(l), input(\type("text")));
+        case string(): return p(label(l), input(\type("text")), vif(condition));
         
-        case integer(): return p(HTML5Node::label(l), input(\type("number")));
+        case integer(): return p(label(l), input(\type("number")), vif(condition));
         
-        case boolean(): return p(HTML5Node::label(l), input(\type("checkbox")));
+        case boolean(): return p(label(l), input(\type("checkbox")), vif(condition));
       }
       
     case computed(str l, str i, AType typ, AExpr expr, src = loc d):
-      return p(HTML5Node::label(l), "{{ id() }}");
+      return p(label(l), "{{ <i>() }}", vif(condition));
       
     case qlist(list[AQuestion] questions, src = loc d):
-      for (AQuestion question <- questions) question2html(question);
+      for (AQuestion question <- questions) question2html(question, f, "true");
       
     case ifthenelse(AExpr expr, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): 
       return div(
         div(
-          vif(expression2js(expr, f)),
-          [ question2html(question, f) | question <- ifqs ]
+          [ question2html(question, f, expression2js(expr, f)) | question <- ifqs ]
         ),
         div(
-          vif("!" + expression2js(expr, f)),
-          [ question2html(question, f) | question <- elseqs ]
+          [ question2html(question, f, "!" + expression2js(expr, f)) | question <- elseqs ]
         )
       );
     
     case ifthen(AExpr expr, list[AQuestion] ifqs): 
-      return div(vif(expression2js(expr, f)),
-        [ question2html(question, f) | question <- ifqs ]
+      return div(
+        [ question2html(question, f, expression2js(expr, f)) | question <- ifqs ]
       );
             
     default: return p();
@@ -157,7 +155,7 @@ str checkComputed(AQuestion q, AForm f) {
 str expression2js(AExpr e, AForm f) {
  switch(e){
  	case parentheses(AExpr a): return "(" + expression2js(a,f) + ")";
- 	case ref(str name): return "this."+name;
+ 	case ref(str name): return name;
  	case integer(int i): return toString(i);
  	case boolean(bool bl): return toString(bl);
  	case string(str s): return s;
