@@ -28,34 +28,36 @@ data Input = input(str question, Value \value);
 VEnv initialEnv(AForm f) {
   VEnv venv = ();
   
-  visit(f) {
-    case regular(str label, str id, AType typ, src = loc def): {
-      switch (typ) {
-        case tint(): 
-          venv += (id : vint(0));
+  for (q <- f.questions) {
+    switch (q) {
+      case regular(str label, str id, AType typ, src = loc def): {
+        switch (typ) {
+          case tint(): 
+            venv += (id : vint(0));
+            
+          case tbool():
+            venv += (id : vbool(false));
+            
+          case tstr():
+            venv += (id : vstr(""));
           
-        case tbool():
-          venv += <id, vbool(false)>;
-          
-        case tstr():
-          venv += <id, vstr("")>;
-        
-        default: return venv;
+          default: return venv;
+        }
       }
-    }
     
-    case computed(str label, str id, AType typ, AExpr expr, src = loc def): {
-      switch (typ) {
-        case tint(): 
-          venv += <id, vint(0)>;
+      case computed(str label, str id, AType typ, AExpr expr, src = loc def): {
+        switch (typ) {
+          case tint(): 
+            venv += (id : vint(0));
+            
+          case tbool():
+            venv += (id : vbool(false));
+            
+          case tstr():
+            venv += (id : vstr(""));
           
-        case tbool():
-          venv += <id, vbool(false)>;
-          
-        case tstr():
-          venv += <id, vstr("")>;
-        
-        default: return venv;
+          default: return venv;
+        }
       }
     }
   }
