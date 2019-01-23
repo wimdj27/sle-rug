@@ -102,14 +102,13 @@ str valueToString(Value v){
 }
 
 str form2js(AForm f, VEnv venv) {
- str script = "var vue = new Vue({
- 			  '       el: \'#vue\',
+ str script = "var form = new Vue({
+ 			  '       el: \'#form\',
  			  '    data: {";
  			  
  set[str] JSquestions = {};
- println(venv);
+ 
  for(cur <- venv){
-   println(cur);
    JSquestions += cur;
    script += "\n        " + cur + ": " + valueToString(venv[cur]) + ",";
  }
@@ -117,16 +116,8 @@ str form2js(AForm f, VEnv venv) {
   script += "\n    },
   		  ' 	methods: {";
 
- for(AQuestion q <- f, q.id notin JSquestions){
-  switch(q){
-    case computed(str label, str id, AType typ, AExpr expr, src = loc def): {
-    	JSquestions += id;
-    	script += "\n    " + id + ": function() {
-    	 	'            return " + "INSERT FUNCTION HERE" + ";
-			'        },";
-    }
-    default: continue;
-   }
+ for(AQuestion q <- f.questions){
+  script += checkComputed(q,f);
  }
  
    script += "\n    }
@@ -135,6 +126,54 @@ str form2js(AForm f, VEnv venv) {
   return script;
 }
 
+str checkComputed(AQuestion q, AForm f) {
+	switch(q){
+    	case computed(str label, str id, AType typ, AExpr expr, src = loc def): {
+    		return "\n    " + id + ": function() {
+    	 	'            return " + expression2js(expr,f) + ";
+			'        },";
+    	}
+    	case qlist(list[AQuestion] questions, src = loc def): {
+    		str new = "";
+    		for(AQuestion q2 <- questions) new += checkComputed(q2,f);
+    		return new;
+    	}
+    	case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc def): {
+    	    str new = "";
+    	    for(AQuestion q2 <- ifqs) new += checkComputed(q2,f);
+  			for(AQuestion q2 <- elseqs) new += checkComputed(q2,f);
+    		return new;
+    	}
+    	case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc def): {
+    	    str new = "";
+    		for(AQuestion q2 <- ifqs) new += checkComputed(q2,f);
+    		return new;
+    	}
+    	default: return "";
+   }
+   return "";
+}
+
 str expression2js(AExpr e, AForm f) {
+ switch(e){
+ 	case parentheses(AExpr a): return "(" + expression2js(a,f) + ")";
+ 	case ref(str name): return "this."+name;
+ 	case integer(int i): return toString(i);
+ 	case boolean(bool bl): return toString(bl);
+ 	case string(str s): return s;
+ 	case multiplication(AExpr a, AExpr b): return expression2js(a,f) + " * " + expression2js(b,f);
+ 	case division(AExpr a, AExpr b): return expression2js(a,f) + " / " + expression2js(b,f);
+ 	case addition(AExpr a, AExpr b): return expression2js(a,f) + " + " + expression2js(b,f);
+ 	case subtraction(AExpr a, AExpr b): return expression2js(a,f) + " - " + expression2js(b,f);
+ 	case greater(AExpr a, AExpr b): return expression2js(a,f) + " \> " + expression2js(b,f);
+ 	case smaller(AExpr a, AExpr b): return expression2js(a,f) + " \< " + expression2js(b,f);
+ 	case greatereq(AExpr a, AExpr b): return expression2js(a,f) + " \>= " + expression2js(b,f);
+ 	case smallereq(AExpr a, AExpr b): return expression2js(a,f) + " \<= " + expression2js(b,f);
+ 	case not(AExpr a): return "!= " + expression2js(a,f);
+ 	case equal(AExpr a, AExpr b): return expression2js(a,f) + " === " + expression2js(b,f);
+ 	case noteq(AExpr a, AExpr b): return expression2js(a,f) + " != " + expression2js(b,f);
+ 	case and(AExpr a, AExpr b): return expression2js(a,f) + " && " + expression2js(b,f);
+ 	case or(AExpr a, AExpr b): return expression2js(a,f) + " || " + expression2js(b,f);
+ }
   return "";
 }
