@@ -2,6 +2,7 @@ module Compile
 
 import AST;
 import Resolve;
+import Eval;
 import IO;
 import lang::html5::DOM; // see standard library
 
@@ -19,7 +20,8 @@ import lang::html5::DOM; // see standard library
  */
 
 void compile(AForm f) {
-  writeFile(f.src[extension="js"].top, form2js(f));
+  VEnv venv = initialEnv(f);
+  writeFile(f.src[extension="js"].top, form2js(f,venv));
   writeFile(f.src[extension="html"].top, toString(form2html(f)));
 }
 
@@ -41,6 +43,39 @@ HTML5Node form2html(AForm f) {
          );
 }
 
-str form2js(AForm f) {
-  return "";
+HTML5Node question2html(AQuestion q){
+return html();
+}
+
+str form2js(AForm f, VEnv venv) {
+ str script = "var vue = new Vue({
+ 			  '       el: \'#vue\',
+ 			  '     data: {";
+ 			  
+ set[str] JSquestions = {};
+ 
+ for(str name <- venv){
+   JSquestions += name;
+   script += "\n   " + id + ": " + name.\value;
+ }
+
+  script += "\n    },
+  		  ' 	methods: {";
+
+ for(AQuestion q <- f){
+  switch(q){
+    case computed(str label, str id, AType typ, AExpr expr, src = loc def): {
+    	JSquestions += id;
+    	script += "\n    " + id + ": function() {
+    	 	'            return " + "INSERT FUNCTION HERE" + ";
+			'        },";
+    }
+    default: continue;
+   }
+ }
+ 
+   script += "\n    }
+          '})";
+      
+  return script;
 }
