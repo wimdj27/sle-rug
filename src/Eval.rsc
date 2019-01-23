@@ -32,7 +32,7 @@ VEnv initialEnv(AForm f) {
     case regular(str label, str id, AType typ, src = loc def): {
       switch (typ) {
         case tint(): 
-          venv += <id, vint(0)>;
+          venv += (id : vint(0));
           
         case tbool():
           venv += <id, vbool(false)>;
