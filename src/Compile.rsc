@@ -65,11 +65,11 @@ HTML5Node question2html(AQuestion q, AForm f, str condition) {
   switch (q) {
     case regular(str l, str i, AType typ, src = loc d):
       switch (typ) {
-        case string(): return p(label(l), input(\type("text"), vmodel(i)), vif(condition));
+        case string(): return p(label(l[1..-1]), input(\type("text"), vmodel(i)), vif(condition));
         
-        case integer(): return p(label(l), input(\type("number"), vmodel(i)), vif(condition));
+        case integer(): return p(label(l[1..-1]), input(\type("number"), vmodel(i)), vif(condition));
         
-        case boolean(): return p(label(l), input(\type("checkbox"), vmodel(i)), vif(condition));
+        case boolean(): return p(label(l[1..-1]), input(\type("checkbox"), vmodel(i)), vif(condition));
       }
       
     case computed(str l, str i, AType typ, AExpr expr, src = loc d):
