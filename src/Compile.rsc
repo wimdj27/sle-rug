@@ -2,7 +2,7 @@ module Compile
 
 import AST;
 import Resolve;
-import Eval;
+import Transform;
 import Boolean;
 import IO;
 import util::Math;
@@ -25,6 +25,7 @@ HTML5Attr vmodel(value val) = html5attr("v-model", val);
 HTML5Attr vif(value val) = html5attr("v-if", val);
 
 void compile(AForm f) {
+  f = flatten(f);
   writeFile(f.src[extension="js"].top, form2js(f));
   writeFile(f.src[extension="html"].top, toString(form2html(f)));
 }
@@ -94,14 +95,6 @@ HTML5Node question2html(AQuestion q, AForm f, str condition) {
       );
             
     default: return p();
-  }
-}
-
-str valueToString(Value v){
-  switch(v){
-    case vint(int x): return toString(x);
-    case vbool(bool bl): return toString(bl);
-    case vstr(str s): return "\""+s+"\"";
   }
 }
 
