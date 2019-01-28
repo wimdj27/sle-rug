@@ -49,11 +49,11 @@ AQuestion flatten(AQuestion q, AExpr condition) {
       return qlist([flatten(q2, condition) | AQuestion q2 <- questions]); 
       
     case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): 
-      return ifthenelse(and(cond, condition), [*flatten(q2, and(cond, condition)) | AQuestion q2 <- ifqs], 
-        [*flatten(q3, and(not(cond), condition)) | AQuestion q3 <- elseqs]);
+      return ifthenelse(and(cond, condition), [flatten(q2, and(cond, condition)) | AQuestion q2 <- ifqs], 
+        [flatten(q3, and(not(cond), condition)) | AQuestion q3 <- elseqs]);
     
     case ifthen(AExpr cond, list[AQuestion] ifqs): 
-      return ifthen(and(cond, condition), [*flatten(q2, and(cond, condition)) | AQuestion q2 <- ifqs]);
+      return ifthen(and(cond, condition), [flatten(q2, and(cond, condition)) | AQuestion q2 <- ifqs]);
             
     default: return;
   }
@@ -67,7 +67,7 @@ AQuestion flatten(AQuestion q, AExpr condition) {
  */
  
  start[Form] rename(start[Form] f, loc useOrDef, str newName, UseDef useDef) {
-   return f; 
+   
  } 
  
  
