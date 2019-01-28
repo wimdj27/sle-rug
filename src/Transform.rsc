@@ -29,7 +29,34 @@ import AST;
  */
  
 AForm flatten(AForm f) {
-  return f; 
+  int i = 0;
+  for (q <- f.questions) {
+    f.questions[i] = flatten(q, boolean(true));
+    i += 1;
+  }
+  return f;
+}
+
+AQuestion flatten(AQuestion q, AExpr condition) {
+  switch (q) {
+    case regular(str label, str id, AType typ, src = loc d):
+      return ifthen(condition, [q]);
+      
+    case computed(str label, str id, AType typ, AExpr expr, src = loc d):
+      return ifthen(condition, [q]);
+      
+    case qlist(list[AQuestion] questions, src = loc d):
+      return qlist([flatten(q2, condition) | AQuestion q2 <- questions]); 
+      
+    case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): 
+      return ifthenelse(and(cond, condition), [*flatten(q2, and(cond, condition)) | AQuestion q2 <- ifqs], 
+        [*flatten(q3, and(not(cond), condition)) | AQuestion q3 <- elseqs]);
+    
+    case ifthen(AExpr cond, list[AQuestion] ifqs): 
+      return ifthen(and(cond, condition), [*flatten(q2, and(cond, condition)) | AQuestion q2 <- ifqs]);
+            
+    default: return;
+  }
 }
 
 /* Rename refactoring:

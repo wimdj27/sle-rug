@@ -78,19 +78,19 @@ HTML5Node question2html(AQuestion q, AForm f, str condition) {
     case qlist(list[AQuestion] questions, src = loc d):
       for (AQuestion question <- questions) question2html(question, f, "true");
       
-    case ifthenelse(AExpr expr, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): 
+    case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): 
       return div(
         div(
-          [ question2html(question, f, expression2js(expr, f)) | AQuestion question <- ifqs ]
+          [ question2html(question, f, expression2js(cond, f)) | AQuestion question <- ifqs ]
         ),
         div(
-          [ question2html(question, f, ("!(" + expression2js(expr, f)) + ")") | AQuestion question <- elseqs ]
+          [ question2html(question, f, ("!(" + expression2js(cond, f)) + ")") | AQuestion question <- elseqs ]
         )
       );
     
-    case ifthen(AExpr expr, list[AQuestion] ifqs): 
+    case ifthen(AExpr cond, list[AQuestion] ifqs): 
       return div(
-        [ question2html(question, f, expression2js(expr, f)) | AQuestion question <- ifqs ]
+        [ question2html(question, f, expression2js(cond, f)) | AQuestion question <- ifqs ]
       );
             
     default: return p();
