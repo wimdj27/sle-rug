@@ -77,21 +77,23 @@ HTML5Node question2html(AQuestion q, AForm f, str condition) {
       return p(label(l[1..-1]), "{{ <i>() }}", vif(condition));
       
     case qlist(list[AQuestion] questions, src = loc d):
-      for (AQuestion question <- questions) question2html(question, f, "true");
+      return div(
+        [ question2html(q2, f, "true") | AQuestion q2 <- questions ]
+      );
       
     case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): 
       return div(
         div(
-          [ question2html(question, f, expression2js(cond, f)) | AQuestion question <- ifqs ]
+          [ question2html(q2, f, expression2js(cond, f)) | AQuestion q2 <- ifqs ]
         ),
         div(
-          [ question2html(question, f, ("!(" + expression2js(cond, f)) + ")") | AQuestion question <- elseqs ]
+          [ question2html(q2, f, ("!(" + expression2js(cond, f)) + ")") | AQuestion q2 <- elseqs ]
         )
       );
     
     case ifthen(AExpr cond, list[AQuestion] ifqs): 
       return div(
-        [ question2html(question, f, expression2js(cond, f)) | AQuestion question <- ifqs ]
+        [ question2html(q2, f, expression2js(cond, f)) | AQuestion q2 <- ifqs ]
       );
             
     default: return p();
@@ -193,7 +195,7 @@ str expression2js(AExpr e, AForm f) {
  	  return "(" + expression2js(a,f) + ")";
  	  
  	case ref(str name): 
- 	  return "this."+name;
+ 	  return "this." + name;
  	  
  	case integer(int i): 
  	  return toString(i);
@@ -202,7 +204,7 @@ str expression2js(AExpr e, AForm f) {
  	  return toString(bl);
  	  
  	case string(str s): 
- 	  return s;
+ 	  return "\'" + s[1..-1] + "\'";
  	  
  	case multiplication(AExpr a, AExpr b): 
  	  return expression2js(a,f) + " * " + expression2js(b,f);
@@ -232,7 +234,7 @@ str expression2js(AExpr e, AForm f) {
  	  return "!" + expression2js(a,f);
  	  
  	case equal(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " === " + expression2js(b,f);
+ 	  return expression2js(a,f) + " == " + expression2js(b,f);
  	  
  	case noteq(AExpr a, AExpr b): 
  	  return expression2js(a,f) + " != " + expression2js(b,f);

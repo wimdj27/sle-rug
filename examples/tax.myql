@@ -18,8 +18,14 @@ form taxOfficeExample {
       privateDebt: integer
     "Value residue:"
       valueResidue: integer = sellingPrice - privateDebt   
-  } else {
+  }
+  {
     "blablablab"
       blabla: integer
+  }
+  
+  if (blabla == 5) {
+    "This works!"
+      working: boolean = true
   }
 }
