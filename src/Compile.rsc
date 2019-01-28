@@ -25,8 +25,7 @@ HTML5Attr vmodel(value val) = html5attr("v-model", val);
 HTML5Attr vif(value val) = html5attr("v-if", val);
 
 void compile(AForm f) {
-  VEnv venv = initialEnv(f);
-  writeFile(f.src[extension="js"].top, form2js(f,venv));
+  writeFile(f.src[extension="js"].top, form2js(f));
   writeFile(f.src[extension="html"].top, toString(form2html(f)));
 }
 
@@ -45,7 +44,7 @@ HTML5Node form2html(AForm f) {
           ),
           input(
             \type("submit"),
-            \value("Submit" + f.name)
+            \value("Submit " + f.name)
           )
         )
       ),
@@ -66,11 +65,11 @@ HTML5Node question2html(AQuestion q, AForm f, str condition) {
   switch (q) {
     case regular(str l, str i, AType typ, src = loc d):
       switch (typ) {
-        case string(): return p(label(l), input(\type("text")), vif(condition), vmodel(i));
+        case string(): return p(label(l), input(\type("text"),  id(i), vmodel(i)), vif(condition));
         
-        case integer(): return p(label(l), input(\type("number")), vif(condition), vmodel(i));
+        case integer(): return p(label(l), input(\type("number"),  id(i), vmodel(i)), vif(condition));
         
-        case boolean(): return p(label(l), input(\type("checkbox")), vif(condition), vmodel(i));
+        case boolean(): return p(label(l), input(\type("checkbox"), id(i), vmodel(i)), vif(condition));
       }
       
     case computed(str l, str i, AType typ, AExpr expr, src = loc d):
@@ -82,16 +81,16 @@ HTML5Node question2html(AQuestion q, AForm f, str condition) {
     case ifthenelse(AExpr expr, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): 
       return div(
         div(
-          [ question2html(question, f, expression2js(expr, f)) | question <- ifqs ]
+          [ question2html(question, f, expression2js(expr, f)) | AQuestion question <- ifqs ]
         ),
         div(
-          [ question2html(question, f, ("!(" + expression2js(expr, f)) + ")") | question <- elseqs ]
+          [ question2html(question, f, ("!(" + expression2js(expr, f)) + ")") | AQuestion question <- elseqs ]
         )
       );
     
     case ifthen(AExpr expr, list[AQuestion] ifqs): 
       return div(
-        [ question2html(question, f, expression2js(expr, f)) | question <- ifqs ]
+        [ question2html(question, f, expression2js(expr, f)) | AQuestion question <- ifqs ]
       );
             
     default: return p();
@@ -106,20 +105,56 @@ str valueToString(Value v){
   }
 }
 
-str form2js(AForm f, VEnv venv) {
+str initial(AQuestion q){
+	 
+  switch (q) {
+  
+    case regular(str label, str id, AType typ, src = loc u):
+    switch(typ){
+    	case integer(): return "\n        " + id + ": 0,";
+    	case boolean(): return "\n        " + id + ": false,";
+    	case string(): return "\n        " + id + ": \'\',";
+    }
+    //return "\n        " + id + ": " + (typ==integer() ? "0" : (typ==boolean() ? "false" : "\'\'")) + ",";
+    
+    case qlist(list[AQuestion] questions, src = loc u): {
+      str new = "";
+      for (AQuestion q2 <- questions) new += initial(q2);
+      return new;
+    }
+    
+    case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
+        str new = "";
+        for (AQuestion q2 <- ifqs) new += initial(q2);
+        for (AQuestion q2 <- elseqs) new += initial(q2);
+        return new;
+    }
+    
+    case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u): {
+    	str new = "";
+        for (AQuestion q <- ifqs) new += initial(q2);
+        return new;
+    }
+    
+    default: return "";
+  }
+}
+
+
+str form2js(AForm f) {
   str script = "var form = new Vue({
- 			   '       el: \'#form\',
+ 			   '    el: \'#form\',
  			   '    data: {";
  			  
   set[str] JSquestions = {};
  
-  for(cur <- venv){
-    JSquestions += cur;
-    script += "\n        " + cur + ": " + valueToString(venv[cur]) + ",";
+  for(AQuestion q <- f.questions){
+    //JSquestions += q.id;
+  	script += initial(q);
   }
 
   script += "\n    },
-  		    ' 	  methods: {";
+  		    '    methods: {";
 
   for(AQuestion q <- f.questions) 
     script += checkComputed(q,f);
@@ -133,7 +168,7 @@ str form2js(AForm f, VEnv venv) {
 str checkComputed(AQuestion q, AForm f) {
   switch(q){
     case computed(str label, str id, AType typ, AExpr expr, src = loc def): 
-      return "\n    " + id + ": function() {
+      return "\n        " + id + ": function() {
     	 	 '            return " + expression2js(expr,f) + ";
 			 '        },";
 			
