@@ -132,7 +132,7 @@ str initial(AQuestion q){
     
     case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u): {
     	str new = "";
-        for (AQuestion q <- ifqs) new += initial(q2);
+        for (AQuestion q2 <- ifqs) new += initial(q2);
         return new;
     }
     
