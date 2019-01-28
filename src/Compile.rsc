@@ -32,7 +32,12 @@ void compile(AForm f) {
 
 HTML5Node form2html(AForm f) {
   return html(
-    script(src("https://cdn.jsdelivr.net/npm/vue@2.5.22/dist/vue.js")),
+    script(
+      src("https://cdn.jsdelivr.net/npm/vue@2.5.22/dist/vue.js")
+    ),
+    script(
+      src(f.src[extension="js"].top.file)
+    ),
     head( 
       title(f.name)
     ),
@@ -77,7 +82,7 @@ HTML5Node question2html(AQuestion q, AForm f, str condition) {
           [ question2html(question, f, expression2js(expr, f)) | question <- ifqs ]
         ),
         div(
-          [ question2html(question, f, "!" + expression2js(expr, f)) | question <- elseqs ]
+          [ question2html(question, f, ("!(" + expression2js(expr, f)) + ")") | question <- elseqs ]
         )
       );
     
