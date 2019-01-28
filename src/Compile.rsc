@@ -73,7 +73,7 @@ HTML5Node question2html(AQuestion q, AForm f, str condition) {
       }
       
     case computed(str l, str i, AType typ, AExpr expr, src = loc d):
-      return p(label(l), "{{ <i>() }}", vif(condition));
+      return p(label(l[1..-1]), "{{ <i>() }}", vif(condition));
       
     case qlist(list[AQuestion] questions, src = loc d):
       for (AQuestion question <- questions) question2html(question, f, "true");
@@ -115,7 +115,6 @@ str initial(AQuestion q){
     	case boolean(): return "\n        " + id + ": false,";
     	case string(): return "\n        " + id + ": \'\',";
     }
-    //return "\n        " + id + ": " + (typ==integer() ? "0" : (typ==boolean() ? "false" : "\'\'")) + ",";
     
     case qlist(list[AQuestion] questions, src = loc u): {
       str new = "";
@@ -145,11 +144,8 @@ str form2js(AForm f) {
   str script = "var form = new Vue({
  			   '    el: \'#form\',
  			   '    data: {";
- 			  
-  set[str] JSquestions = {};
- 
+ 			 
   for(AQuestion q <- f.questions){
-    //JSquestions += q.id;
   	script += initial(q);
   }
 
