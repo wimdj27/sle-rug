@@ -32,12 +32,6 @@ void compile(AForm f) {
 
 HTML5Node form2html(AForm f) {
   return html(
-    script(
-      src("https://cdn.jsdelivr.net/npm/vue@2.5.22/dist/vue.js")
-    ),
-    script(
-      src(f.src[extension="js"].top.file)
-    ),
     head( 
       title(f.name)
     ),
@@ -54,6 +48,15 @@ HTML5Node form2html(AForm f) {
             \value("Submit" + f.name)
           )
         )
+      ),
+      script(
+        src("https://unpkg.com/vue")
+      ),
+      script(
+        src("https://unpkg.com/axios/dist/axios.min.js")
+      ),
+      script(
+        src(f.src[extension="js"].top.file)
       )
     )
  );
@@ -63,11 +66,11 @@ HTML5Node question2html(AQuestion q, AForm f, str condition) {
   switch (q) {
     case regular(str l, str i, AType typ, src = loc d):
       switch (typ) {
-        case string(): return p(label(l), input(\type("text")), vif(condition));
+        case string(): return p(label(l), input(\type("text")), vif(condition), vmodel(i));
         
-        case integer(): return p(label(l), input(\type("number")), vif(condition));
+        case integer(): return p(label(l), input(\type("number")), vif(condition), vmodel(i));
         
-        case boolean(): return p(label(l), input(\type("checkbox")), vif(condition));
+        case boolean(): return p(label(l), input(\type("checkbox")), vif(condition), vmodel(i));
       }
       
     case computed(str l, str i, AType typ, AExpr expr, src = loc d):
