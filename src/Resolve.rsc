@@ -23,9 +23,8 @@ UseDef resolve(AForm f) = uses(f) o defs(f);
 Use uses(AForm f) {
   Use use = {};
   
-  for (q <- f.questions) {
+  for (q <- f.questions)
     use += uses(q);
-  }
   
   return use;
 }
@@ -34,7 +33,7 @@ Use uses(AQuestion q) {
   Use use = {};
   
   switch (q) {
-    case computed(str label, str id, AType typ, AExpr expr, src = loc u):
+    case computed(str label, str id, AType \type, AExpr expr, src = loc u):
       use += uses(expr);
     
     case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
@@ -58,73 +57,73 @@ Use uses(AExpr e) {
   Use use = {};
   
   switch(e) {
-    case parentheses(AExpr a, src = loc u):
-      use += uses(a);
+    case parentheses(AExpr l, src = loc u):
+      use += uses(l);
     
     case ref(str name, src = loc u):
       use += { <u, name> };
     
-    case multiplication(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case multiplication(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
-    case division(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case division(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
-    case addition(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case addition(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
-    case subtraction(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case subtraction(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
-    case greater(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case greater(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
-    case smaller(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case smaller(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
-    case greatereq(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case greatereq(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
-    case smallereq(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case smallereq(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
-    case not(AExpr a):
-      use += uses(a);
+    case not(AExpr l):
+      use += uses(l);
     
-    case equal(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case equal(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
-    case noteq(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case noteq(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
-    case and(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case and(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
-    case or(AExpr a, AExpr b): {
-      use += uses(a);
-      use += uses(b);
+    case or(AExpr l, AExpr r): {
+      use += uses(l);
+      use += uses(r);
     }
     
     default: return use;
@@ -136,9 +135,8 @@ Use uses(AExpr e) {
 Def defs(AForm f) {
   Def def = {};
   
-  for (q <- f.questions) {
+  for (q <- f.questions)
     def += defs(q);
-  }
   
   return def;
 }
@@ -147,22 +145,22 @@ Def defs(AQuestion q) {
   Def def = {};
   
   switch (q) {
-    case regular(str label, str id, AType typ, src = loc d, idsrc = loc d2):
+    case regular(str label, str id, AType \type, src = loc d, idsrc = loc d2):
       def += { <id, d2> };
       
-    case computed(str label, str id, AType typ, AExpr expr, src = loc d, idsrc = loc d2):
+    case computed(str label, str id, AType \type, AExpr expr, src = loc d, idsrc = loc d2):
       def += { <id, d2> };
       
     case qlist(list[AQuestion] questions, src = loc d):
-      for (AQuestion qt <- questions) def += defs(qt);
+      for (AQuestion q2 <- questions) def += defs(q2);
       
     case ifthenelse(AExpr expr, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc d): {
-      for (AQuestion qt <- ifqs) def += defs(qt);
-      for (AQuestion qt <- elseqs) def += defs(qt);
+      for (AQuestion q2 <- ifqs) def += defs(q2);
+      for (AQuestion q2 <- elseqs) def += defs(q2);
     }
     
     case ifthen(AExpr expr, list[AQuestion] ifqs): 
-      for (AQuestion qt <- ifqs) def += defs(qt);
+      for (AQuestion q2 <- ifqs) def += defs(q2);
       
     default: return def;
   }

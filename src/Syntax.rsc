@@ -43,7 +43,7 @@ syntax Type
   | "boolean";
   
 lexical Str 
-  = "\"" [a-z A-Z 0-9 \ ? ! : _]* "\"";
+  = "\"" [a-z A-Z 0-9 _ ~ ! @ # $ % ^& * ( ) + = \< \> ? /  ; : \ ]* "\"";
 
 lexical Int 
   = [0-9]*;
@@ -51,3 +51,5 @@ lexical Int
 lexical Bool 
   = "true" 
   | "false";
+
+

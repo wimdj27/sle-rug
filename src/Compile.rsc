@@ -64,8 +64,8 @@ HTML5Node form2html(AForm f) {
 
 HTML5Node question2html(AQuestion q, AForm f, str condition) {
   switch (q) {
-    case regular(str l, str i, AType typ, src = loc d):
-      switch (typ) {
+    case regular(str l, str i, AType t, src = loc d):
+      switch (t) {
         case string(): return p(label(l[1..-1]), input(\type("text"), vmodel(i)), vif(condition));
         
         case integer(): return p(label(l[1..-1]), input(\type("number"), vmodel(i)), vif(condition));
@@ -73,7 +73,7 @@ HTML5Node question2html(AQuestion q, AForm f, str condition) {
         case boolean(): return p(label(l[1..-1]), input(\type("checkbox"), vmodel(i)), vif(condition));
       }
       
-    case computed(str l, str i, AType typ, AExpr expr, src = loc d):
+    case computed(str l, str i, AType t, AExpr expr, src = loc d):
       return p(label(l[1..-1]), "{{ <i>() }}", vif(condition));
       
     case qlist(list[AQuestion] questions, src = loc d):
@@ -101,15 +101,13 @@ HTML5Node question2html(AQuestion q, AForm f, str condition) {
 }
 
 str initial(AQuestion q){
-	 
   switch (q) {
-  
     case regular(str label, str id, AType typ, src = loc u):
-    switch(typ){
-    	case integer(): return "\n        " + id + ": 0,";
-    	case boolean(): return "\n        " + id + ": false,";
-    	case string(): return "\n        " + id + ": \'\',";
-    }
+      switch(typ){
+        case integer(): return "\n        " + id + ": 0,";
+        case boolean(): return "\n        " + id + ": false,";
+        case string(): return "\n        " + id + ": \'\',";
+      }
     
     case qlist(list[AQuestion] questions, src = loc u): {
       str new = "";
@@ -118,16 +116,16 @@ str initial(AQuestion q){
     }
     
     case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
-        str new = "";
-        for (AQuestion q2 <- ifqs) new += initial(q2);
-        for (AQuestion q2 <- elseqs) new += initial(q2);
-        return new;
+      str new = "";
+      for (AQuestion q2 <- ifqs) new += initial(q2);
+      for (AQuestion q2 <- elseqs) new += initial(q2);
+      return new;
     }
     
     case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u): {
-    	str new = "";
-        for (AQuestion q2 <- ifqs) new += initial(q2);
-        return new;
+      str new = "";
+      for (AQuestion q2 <- ifqs) new += initial(q2);
+      return new;
     }
     
     default: return "";
@@ -140,18 +138,18 @@ str form2js(AForm f) {
  			   '    el: \'#form\',
  			   '    data: {";
  			 
-  for(AQuestion q <- f.questions){
+  for (AQuestion q <- f.questions){
   	script += initial(q);
   }
 
   script += "\n    },
   		    '    methods: {";
 
-  for(AQuestion q <- f.questions) 
+  for (AQuestion q <- f.questions) 
     script += checkComputed(q,f);
  
-   script += "\n    }
-             '})";
+  script += "\n    }
+            '})";
       
   return script;
 }
@@ -184,15 +182,15 @@ str checkComputed(AQuestion q, AForm f) {
     	
     default: return "";
    
-   }
+  }
    
-   return "";
+  return "";
 }
 
 str expression2js(AExpr e, AForm f) {
-  switch(e){
- 	case parentheses(AExpr a): 
- 	  return "(" + expression2js(a,f) + ")";
+  switch (e) {
+ 	case parentheses(AExpr l): 
+ 	  return "(" + expression2js(l, f) + ")";
  	  
  	case ref(str name): 
  	  return "this." + name;
@@ -200,50 +198,50 @@ str expression2js(AExpr e, AForm f) {
  	case integer(int i): 
  	  return toString(i);
  	  
- 	case boolean(bool bl): 
- 	  return toString(bl);
+ 	case boolean(bool b): 
+ 	  return toString(b);
  	  
  	case string(str s): 
  	  return "\'" + s[1..-1] + "\'";
  	  
- 	case multiplication(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " * " + expression2js(b,f);
+ 	case multiplication(AExpr l, AExpr r): 
+ 	  return expression2js(l, f) + " * " + expression2js(r, f);
  	  
- 	case division(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " / " + expression2js(b,f);
+ 	case division(AExpr l, AExpr r): 
+ 	  return expression2js(l, f) + " / " + expression2js(r, f);
  	  
- 	case addition(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " + " + expression2js(b,f);
+ 	case addition(AExpr l, AExpr r): 
+ 	  return expression2js(l, f) + " + " + expression2js(r, f);
  	  
- 	case subtraction(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " - " + expression2js(b,f);
+ 	case subtraction(AExpr l, AExpr r): 
+ 	  return expression2js(l, f) + " - " + expression2js(r, f);
  	  
- 	case greater(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " \> " + expression2js(b,f);
+ 	case greater(AExpr l, AExpr r):  
+ 	  return expression2js(l, f) + " \> " + expression2js(r, f);
  	  
- 	case smaller(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " \< " + expression2js(b,f);
+ 	case smaller(AExpr l, AExpr r): 
+ 	  return expression2js(l, f) + " \< " + expression2js(r, f);
  	  
- 	case greatereq(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " \>= " + expression2js(b,f);
+ 	case greatereq(AExpr l, AExpr r): 
+ 	  return expression2js(l, f) + " \>= " + expression2js(r, f);
  	  
- 	case smallereq(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " \<= " + expression2js(b,f);
+ 	case smallereq(AExpr l, AExpr r): 
+ 	  return expression2js(l, f) + " \<= " + expression2js(r, f);
  	  
- 	case not(AExpr a): 
- 	  return "!" + expression2js(a,f);
+ 	case not(AExpr l): 
+ 	  return "!" + expression2js(l, f);
  	  
- 	case equal(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " == " + expression2js(b,f);
+ 	case equal(AExpr l, AExpr r): 
+ 	  return expression2js(l, f) + " == " + expression2js(r, f);
  	  
- 	case noteq(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " != " + expression2js(b,f);
+ 	case noteq(AExpr l, AExpr r): 
+ 	  return expression2js(l, f) + " != " + expression2js(r, f);
  	  
- 	case and(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " && " + expression2js(b,f);
+ 	case and(AExpr l, AExpr r): 
+ 	  return expression2js(l, f) + " && " + expression2js(r, f);
  	  
- 	case or(AExpr a, AExpr b): 
- 	  return expression2js(a,f) + " || " + expression2js(b,f);
+ 	case or(AExpr l, AExpr r): 
+ 	  return expression2js(l, f) + " || " + expression2js(r, f);
   }
   
   return "";

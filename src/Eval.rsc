@@ -14,7 +14,7 @@ import IO;
 // Semantic domain for expressions (values)
 data Value
   = vint(int n)
-  | vbool(bool b)
+  | vbool(bool r)
   | vstr(str s)
   ;
 
@@ -24,14 +24,14 @@ alias VEnv = map[str name, Value \value];
 // Modeling user input
 data Input = input(str question, Value \value);
   
-// produce an environment which for each question has a default value
+// produce an environment which for each question has l default value
 // (e.g. 0 for int, "" for str etc.)
 VEnv initialEnv(AForm f) {
   VEnv venv = ();
   
   visit(f) {
-    case regular(str label, str id, AType typ, src = loc def): {
-      switch (typ) {
+    case regular(str label, str id, AType \type, src = loc def):
+      switch (\type) {
         case integer(): 
           venv += (id : vint(0));
           
@@ -41,10 +41,9 @@ VEnv initialEnv(AForm f) {
         case string():
           venv += (id : vstr(""));
       }
-    }
   
-    case computed(str label, str id, AType typ, AExpr expr, src = loc def): {
-      switch (typ) {
+    case computed(str label, str id, AType \type, AExpr expr, src = loc def):
+      switch (\type) {
         case integer(): 
           venv += (id : vint(0));
           
@@ -54,7 +53,6 @@ VEnv initialEnv(AForm f) {
         case string():
           venv += (id : vstr(""));
       }
-    }
   }
   
   return venv;
@@ -70,9 +68,8 @@ VEnv eval(AForm f, Input inp, VEnv venv) {
 }
 
 VEnv evalOnce(AForm f, Input inp, VEnv venv) {
-  for (q <- f.questions) {
+  for (q <- f.questions)
     venv = eval(q, inp, venv);
-  }
   
   return venv;
 }
@@ -82,29 +79,23 @@ VEnv eval(AQuestion q, Input inp, VEnv venv) {
   // evaluate inp and computed questions to return updated VEnv
   
   switch (q) {
-    case regular(str label, str id, AType typ, src = loc u):
+    case regular(str label, str id, AType \type, src = loc u):
       if (id == inp.question) venv[inp.question] = inp.\value;
     
-    case computed(str label, str id, AType typ, AExpr expr, src = loc u):
+    case computed(str label, str id, AType \type, AExpr expr, src = loc u):
       venv[id] = eval(expr, venv);
     
-    case qlist(list[AQuestion] questions, src = loc u): {
+    case qlist(list[AQuestion] questions, src = loc u):
       for (q <- questions) venv = eval(q, inp, venv);
-    }
     
-    case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
-      if (eval(cond, venv).b) {
-        for (q <- ifqs) venv = eval(q, inp, venv);
-      } else {
+    case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u):
+      if (eval(cond, venv).r)
+        for (q <- ifqs) venv = eval(q, inp, venv);else
         for (q <- elseqs) venv = eval(q, inp, venv);
-      }
-    }
     
-    case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u): {
-      if (eval(cond, venv).b) {
+    case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u):
+      if (eval(cond, venv).r)
         for (q <- ifqs) venv = eval(q, inp, venv);
-      }
-    }
     
     default: return venv;
   }
@@ -114,58 +105,58 @@ VEnv eval(AQuestion q, Input inp, VEnv venv) {
 
 Value eval(AExpr e, VEnv venv) {
   switch (e) {
-    case parentheses(AExpr a):
-      return eval(a);
+    case parentheses(AExpr l):
+      return eval(l);
     
     case ref(str x): return venv[x];
     
     case integer(int i):
       return vint(i);
       
-    case boolean(bool bl):
-      return vbool(bl);
+    case boolean(bool b):
+      return vbool(b);
     
     case string(str s):
       return vstr(s);
     
-    case multiplication(AExpr a, AExpr b):
-      return vint( eval(a, venv).n * eval(b, venv).n );
+    case multiplication(AExpr l, AExpr r):
+      return vint(eval(l, venv).n * eval(r, venv).n);
     
-    case division(AExpr a, AExpr b): 
-      return vint( eval(a, venv).n / eval(b, venv).n );
+    case division(AExpr l, AExpr r): 
+      return vint(eval(l, venv).n / eval(r, venv).n);
     
-    case addition(AExpr a, AExpr b): 
-      return vint( eval(a, venv).n + eval(b, venv).n );
+    case addition(AExpr l, AExpr r): 
+      return vint(eval(l, venv).n + eval(r, venv).n);
     
-    case subtraction(AExpr a, AExpr b): 
-      return vint( eval(a, venv).n - eval(b, venv).n );
+    case subtraction(AExpr l, AExpr r): 
+      return vint(eval(l, venv).n - eval(r, venv).n);
     
-    case greater(AExpr a, AExpr b): 
-      return vbool( eval(a, venv).b > eval(b, venv).b );
+    case greater(AExpr l, AExpr r): 
+      return vbool(eval(l, venv).b > eval(r, venv).b);
     
-    case smaller(AExpr a, AExpr b): 
-      return vbool( eval(a, venv).b < eval(b, venv).b );
+    case smaller(AExpr l, AExpr r): 
+      return vbool(eval(l, venv).b < eval(r, venv).b);
     
-    case greatereq(AExpr a, AExpr b):
-      return vbool( eval(a, venv).b >= eval(b, venv).b );
+    case greatereq(AExpr l, AExpr r):
+      return vbool(eval(l, venv).b >= eval(r, venv).b);
     
-    case smallereq(AExpr a, AExpr b): 
-      return vbool( eval(a, venv).b <= eval(b, venv).b );
+    case smallereq(AExpr l, AExpr r): 
+      return vbool(eval(l, venv).b <= eval(r, venv).b);
     
-    case not(AExpr a):
-      return vbool( !eval(a, venv).b );
+    case not(AExpr l):
+      return vbool(!eval(l, venv).b);
     
-    case equal(AExpr a, AExpr b):
-      return vbool( eval(a, venv).b == eval(b, venv).b ); 
+    case equal(AExpr l, AExpr r):
+      return vbool(eval(l, venv).b == eval(r, venv).b); 
     
-    case noteq(AExpr a, AExpr b): 
-      return vbool( eval(a, venv).b != eval(b, venv).b );
+    case noteq(AExpr l, AExpr r): 
+      return vbool(eval(l, venv).b != eval(r, venv).b);
     
-    case and(AExpr a, AExpr b): 
-      return vbool( eval(a, venv).b && eval(b, venv).b );
+    case and(AExpr l, AExpr r): 
+      return vbool(eval(l, venv).b && eval(r, venv).b);
     
-    case or(AExpr a, AExpr b): 
-      return vbool( eval(a, venv).b || eval(b, venv).b );
+    case or(AExpr l, AExpr r): 
+      return vbool(eval(l, venv).b || eval(r, venv).b);
     
     default: throw "Unsupported expression <e>";
   }
