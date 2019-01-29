@@ -39,13 +39,13 @@ Use uses(AQuestion q) {
     
     case ifthenelse(AExpr cond, list[AQuestion] ifqs, list[AQuestion] elseqs, src = loc u): {
       use += uses(cond);
-      for (qt <- ifqs) use += uses(qt);
-      for (qt <- elseqs) use += uses(qt);
+      for (q2 <- ifqs) use += uses(q2);
+      for (q2 <- elseqs) use += uses(q2);
     }
     
     case ifthen(AExpr cond, list[AQuestion] ifqs, src = loc u): {
       use += uses(cond);
-      for (qt <- ifqs) use += uses(qt);
+      for (q2 <- ifqs) use += uses(q2);
     }
     
     default: return use;
@@ -147,11 +147,11 @@ Def defs(AQuestion q) {
   Def def = {};
   
   switch (q) {
-    case regular(str label, str id, AType typ, src = loc d):
-      def += { <id, d> };
+    case regular(str label, str id, AType typ, src = loc d, idsrc = loc d2):
+      def += { <id, d2> };
       
-    case computed(str label, str id, AType typ, AExpr expr, src = loc d):
-      def += { <id, d> };
+    case computed(str label, str id, AType typ, AExpr expr, src = loc d, idsrc = loc d2):
+      def += { <id, d2> };
       
     case qlist(list[AQuestion] questions, src = loc d):
       for (AQuestion qt <- questions) def += defs(qt);

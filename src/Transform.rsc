@@ -3,6 +3,7 @@ module Transform
 import Syntax;
 import Resolve;
 import AST;
+extend lang::std::Id;
 
 /* 
  * Transforming QL forms
@@ -66,9 +67,15 @@ AQuestion flatten(AQuestion q, AExpr condition) {
  *
  */
  
- start[Form] rename(start[Form] f, loc useOrDef, str newName, UseDef useDef) {
-   
- } 
+start[Form] rename(start[Form] f, loc useOrDef, str newName, UseDef useDef) {
+  set[loc] locs = { u | <loc u, loc d> <- useDef, d == useOrDef } 
+    + { d | <loc u, loc d> <- useDef, u == useOrDef }  + useOrDef;
+  
+  return visit (f) {
+    case Id x => [Id]newName
+      when x@\loc in locs
+  }
+}
  
  
  

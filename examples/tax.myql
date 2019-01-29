@@ -20,11 +20,11 @@ form taxOfficeExample {
       valueResidue: integer = sellingPrice - privateDebt   
   }
   {
-    "blablablab"
-      blabla: integer
+    "Give a number"
+      number: integer
   }
   
-  if (blabla == 5) {
+  if (number == 5) {
     "This works!"
       working: boolean = true
   }

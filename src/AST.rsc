@@ -11,7 +11,7 @@ data AForm(loc src = |tmp:///|)
   = form(str name, list[AQuestion] questions)
   ; 
 
-data AQuestion(loc src = |tmp:///|)
+data AQuestion(loc src = |tmp:///|, loc idsrc = |tmp:///|)
   = regular(str label, str id, AType typ)
   | computed(str label, str id, AType typ, AExpr expr)
   | qlist(list[AQuestion] questions)
