@@ -20,11 +20,11 @@ TEnv collect(AForm f) {
   TEnv tenv = {};
   
   visit(f) {
-    case regular(str label, str id, AType typ, src = loc def):
-      tenv += <def, id, label, toType(typ)>;
+    case regular(str label, str id, AType typ, src = loc def, idsrc = def2):
+      tenv += <def2, id, label, toType(typ)>;
     
-    case computed(str label, str id, AType typ, AExpr expr, src = loc def):
-      tenv += <def, id, label, toType(typ)>;
+    case computed(str label, str id, AType typ, AExpr expr, src = loc def, idsrc = def2):
+      tenv += <def2, id, label, toType(typ)>;
   }
   
   return tenv;
@@ -45,8 +45,8 @@ set[Message] check(AForm f, TEnv tenv, UseDef useDef) {
   if ( (<loc1, x, _, tint()> <- tenv && <loc2, x, _, tbool()> <- tenv )
         || (<loc1, x, _, tint()> <- tenv && <loc2, x, _, tstr()> <- tenv )
         || (<loc1, x, _, tbool()> <- tenv && <loc2, x, _, tstr()> <- tenv )) {
-        msgs += { error("Duplicate question with different types", loc1) };
-        msgs += { error("Duplicate question with different types", loc2) };
+        msgs += error("Duplicate question with different types", loc1);
+        msgs += error("Duplicate question with different types", loc2);
   }
   
   for (AQuestion q <- f.questions) {
@@ -239,12 +239,10 @@ set[Message] check(AExpr e, TEnv tenv, UseDef useDef) {
 Type typeOf(AExpr e, TEnv tenv, UseDef useDef) {
   switch (e) {
     case ref(str x, src = loc u):  
-      if (<u, loc d> <- useDef, <d, x, _, Type t> <- tenv) {
-        return t;
-      }
+      if (<u, loc d> <- useDef, <d, x, _, Type t> <- tenv) return t;
     
     case parentheses(AExpr expr): 
-    	return typeOf(expr, tenv, useDef);
+      return typeOf(expr, tenv, useDef);
     	
     case integer(int i):
       return tint();

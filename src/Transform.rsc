@@ -76,7 +76,7 @@ start[Form] rename(start[Form] f, loc useOrDef, str newName, UseDef useDef) {
       when x@\loc in locs
   }
 }
- 
+
  
  
 
